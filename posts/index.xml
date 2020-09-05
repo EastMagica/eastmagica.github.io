@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on East Mgica</title>
+    <link>https://blog.eastmagica.com/posts/</link>
+    <description>Recent content in Posts on East Mgica</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 05 Sep 2020 10:38:37 +0800</lastBuildDate>
+    
+	<atom:link href="https://blog.eastmagica.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>My First Post</title>
+      <link>https://blog.eastmagica.com/posts/2020/my-first-post/</link>
+      <pubDate>Sat, 05 Sep 2020 10:38:37 +0800</pubDate>
+      
+      <guid>https://blog.eastmagica.com/posts/2020/my-first-post/</guid>
+      <description>$$E=mc^2$$
+import numpy as np print(&amp;quot;Hello, world&amp;quot;)  </description>
+    </item>
+    
+    <item>
+      <title>有限元方法入门（1）：一维算例</title>
+      <link>https://blog.eastmagica.com/posts/2019/fem-1/</link>
+      <pubDate>Wed, 31 Jul 2019 18:52:10 +0800</pubDate>
+      
+      <guid>https://blog.eastmagica.com/posts/2019/fem-1/</guid>
+      <description>有限元方法多用于二维、三维的区域上，相比于有限差分方法，对非规则网格的适应性较好。而在一维区域上，有限元方法与有限差分方法相比，没有太大的优</description>
+    </item>
+    
+  </channel>
+</rss>
