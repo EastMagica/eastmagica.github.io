@@ -1,0 +1,218 @@
+baseURL = "https://blog.eastmagica.com"
+languageCode = "en"
+defaultContentLanguage = "en"
+title = "East Mgica"
+
+theme = "left"
+
+# if your lang is not Chinese, Japanese or Korean, pls comment this line
+hasCJKLanguage = true
+
+paginate = 12
+enableEmoji = true
+enableRobotsTXT = true
+googleAnalytics = ""
+# disqusShortname = "eastm"
+
+[sitemap]
+  changefreq = "monthly"
+  filename = "sitemap.xml"
+  priority = 0.5
+
+[blackfriday]
+  hrefTargetBlank = true
+  nofollowLinks = true
+  noreferrerLinks = true
+
+[Permalinks]
+  posts = "/posts/:year/:filename/"
+
+# disable condeFences to use theme code highlight
+# or this will give u an annoying code block background color
+[markup]
+  [markup.highlight]
+    codeFences = false
+
+[menu]
+  [[menu.main]]
+    name = "Blog"
+    url = "/posts/"
+    weight = 1
+
+  [[menu.main]]
+    name = "Tags"
+    url = "/Tags/"
+    weight = 3
+
+  [[menu.main]]
+    name = "About"
+    url = "/about"
+    weight = 4
+
+  [[menu.main]]
+    name = "RSS"
+    url = "/atom.xml"
+    weight = 5
+
+[params]
+    since = 2018
+    # Author's name
+    author = "EastMagica"
+    # Subtitle
+    subtitle = "人生到处知何似，应似飞鸿踏雪泥"
+    # Base CDN URL
+    cdn_url = ""
+    # post or other
+    home_mode = ""
+
+    mathjax = false
+
+    # google_verification = ""
+    # bing_verification = ""
+    # yandex_verification = ""
+    # pinterest_verification = ""
+    # baidu_verification = ""
+
+    #comment it to use gravatar
+    avatar = "/images/me/avatar.jpg"
+    socialShare = false
+
+    description = "" # site description
+    keywords = "" # site keywords
+
+    license= '如无特殊声明，本博客文章均以 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 协议发布'
+
+[params.gravatar]
+    #email = "example@gmail.com"   #uncomment and insert your email address to use gravatar
+
+
+[params.social]
+    GitHub = "https://github.com/eastmagica"
+    Email   = "eastmagica@outlook.com"
+    Weibo = "https://weibo.com/eastmagica"
+    # Linkedin = "xxxx"
+    # Twitter = "xxxx"
+    # Instagram = "xxxx"
+    # Facebook = "xxxx"
+    # Telegram = "xxxx"
+    # Medium = "xxxx"
+    # Gitlab = "xxxx"
+    # Youtubelegacy = "xxxx"
+    # Youtubecustom = "xxxx"
+    # Youtubechannel = "xxxx"
+    # Tumblr ="xxxx"
+    # Quora = "xxxx"
+    # Keybase = "xxxx"
+    # Pinterest = "xxxx"
+    # Reddit = "xxxx"
+    # Codepen = "xxxx"
+    # Bitbucket = "xxxx"
+    # Stackoverflow = "xxxxx"
+    # Odnoklassniki = "xxxx"
+    # VKontakte = "xxxx"
+    # Flickr = "xxxx"
+    # Xing = "xxxx"
+    # Snapchat = "xxxx"
+    # Soundcloud = "xxxx"
+    # Spotify = "xxxx"
+    # Bandcamp = "xxxx"
+    # Paypal = "xxxx"
+    # Fivehundredpx = "xxxx"
+    # Mix = "xxxx"
+    # Goodreads = "xxxx"
+    # Lastfm = "xxxx"
+    # Foursquare = "xxxx"
+    # Hackernews = "xxxx"
+    # Kickstarter = "xxxx"
+    # Patreon = "xxxx"
+    # Steam = "xxxx"
+    # Twitch = "xxxx"
+    # Strava = "xxxx"
+    # Skype = "xxxx"
+    # Whatsapp = "xxxx"
+    # Zhihu = "xxxx"
+    # Douban = "xxxx"
+    # Angellist = "xxxx"
+    # Slidershare = "xxxx"
+    # Jsfiddle = "xxxx"
+    # Deviantart = "xxxx"
+    # Behance = "xxxx"
+    # Dribble = "xxxx"
+    # Wordpress = "xxxx"
+    # Vine = "xxxx"
+    # Googlescholar = "xxxx"
+    # Researchgate = "xxxx"
+    # Mastodon = "xxxx"
+    # Thingiverse = "xxxx"
+
+[params.share]
+  # Twitter = true
+  # Facebook = true
+  # Linkedin = true
+  # Reddit = true
+  # Pinterest = true
+  # HackerNews = true
+  # Mix = true
+  # Tumblr = true
+  # VKontakte = true
+  # Douban = true
+  # Weibo = true
+
+# for RSS
+copyright = "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License."
+defaultContentLanguage = "en"
+
+[outputs]
+    home = ["Atom", "HTML"]
+
+[outputFormats.Atom]
+    mediatype = "application/rss"
+    baseName = "atom"
+
+[author]
+  name = "EastMagica"
+
+  [params.publisher]
+    name = "EastMagica"
+
+  [params.publisher.logo]
+    url = "logo.png"
+    width = 127
+    height = 40
+
+  [params.logo]
+    url = "logo.png"
+    width = 127
+    height = 40
+
+  [params.image]
+    url = "cover.png"
+    width = 800
+    height = 600
+
+[params.gitalk]
+#   enable=false
+#   owner = "eastmagica"       # Your GitHub ID
+#   repo = ""        # The repo to store comments
+#   clientId = ""    # Your client ID
+#   clientSecret = "" # Your client secret
+
+[params.valine]
+#   enable = false
+#   appId = 'your appId'
+#   appKey = 'your appKey'
+#   notify = false  # mail notifier , https://github.com/xCss/Valine/wiki
+#   verify = false # Verification code
+#   avatar = 'mm'
+#   placeholder = 'your comments ...'
+#   visitor = true
+
+[params.utterances]       # https://utteranc.es/
+#     owner = ""              # Your GitHub ID
+#     repo = ""               # The repo to store comments
+
+[params.gitment]          # Gitment is a comment system based on GitHub issues. see https://github.com/imsun/gitment
+#     owner = ""              # Your GitHub ID
+#     repo = ""               # The repo to store comments
+#     clientId = ""           # Your client ID
+#     clientSecret = ""       # Your client secret

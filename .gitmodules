@@ -1,0 +1,3 @@
+[submodule "themes/left"]
+	path = themes/left
+	url = https://github.com/batkiz/left
