@@ -1,1 +1,413 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>East Mgica</title><link>https://blog.eastmagica.com/atom.xml</link><description>East Mgica</description><generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en</language></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>East Mgica</title><link>https://blog.eastmagica.com/atom.xml</link><description>East Mgica</description><generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en</language><lastBuildDate>Wed, 31 Jul 2019 18:52:10 +0800</lastBuildDate><item><title>About</title><link>https://blog.eastmagica.com/about/</link><pubDate>Sat, 05 Sep 2020 11:30:55 +0800</pubDate><guid>https://blog.eastmagica.com/about/</guid><description>人生到处知何似，应似飞鸿踏雪泥 About me 计算数学研究生在读，喜欢数学，喜欢代码，业余也会玩一玩摄影。</description><content type="html"><![CDATA[<blockquote>
+<p>人生到处知何似，应似飞鸿踏雪泥</p>
+</blockquote>
+<h2 id="about-me">About me</h2>
+<p>计算数学研究生在读，喜欢数学，喜欢代码，业余也会玩一玩摄影。</p>
+]]></content></item><item><title>有限元方法入门（1）：一维算例</title><link>https://blog.eastmagica.com/posts/2019/fem-1/</link><pubDate>Wed, 31 Jul 2019 18:52:10 +0800</pubDate><guid>https://blog.eastmagica.com/posts/2019/fem-1/</guid><description>有限元方法多用于二维、三维的区域上，相比于有限差分方法，对非规则网格的适应性较好。而在一维区域上，有限元方法与有限差分方法相比，没有太大的优</description><content type="html"><![CDATA[<p>有限元方法多用于二维、三维的区域上，相比于有限差分方法，对非规则网格的适应性较好。而在一维区域上，有限元方法与有限差分方法相比，没有太大的优势。但从一维的例子讲起，有助于由浅及深的了解有限元的思想。</p>
+<p>有限元方法多用于椭圆方程的求解，考虑最为常见的椭圆型方程——Poisson方程，如下：</p>
+<p>$$
+\begin{cases}
+-\nabla^2 u=f(x),\quad &amp;x\in \Omega \<br>
+u|_{\Gamma}=\alpha(x),\quad &amp;x\in \Gamma
+\end{cases}
+$$</p>
+<p>其中 $\Omega$ 是 $x$ 区域上的一个有界区间，边界 $\Gamma$ 是区间 $\Gamma$ 的两侧端点。</p>
+<p>我们选取具体的一维Poisson方程，来讲一讲有限元方法的具体步骤：</p>
+<p>$$
+\begin{cases}
+-\nabla^2 u=\pi^2 \mathrm{sin}(\pi x),\quad &amp;x\in (0, 1) \<br>
+u(0)=0, u(1)=0
+\end{cases}
+$$</p>
+<h2 id="1-构造变分形式">1. 构造变分形式</h2>
+<p>对于任意的 $v \in H^1_0$，乘以 $-\nabla^2 u=f$ 的两侧，运用Green公式，并带入边界条件可以得到：</p>
+<p>$$
+-\int \nabla u\cdot \nabla v \mathrm{d}x= \int f\cdot v \mathrm{d}x
+$$</p>
+<p>即得到边值的变分形式 $a(u, v)=(f,v)$。</p>
+<h2 id="2-剖分区域">2. 剖分区域</h2>
+<p>接下来剖分区域 $(0, 1)$，为方便起见，选择均匀剖分的方式，构造<strong>一致网格</strong></p>
+<p><img src="split_mesh_none.png" alt="fig. 1D Mesh"></p>
+<p>将 $(0, 1)$ 区间均匀剖分为 4 部分，网格点坐标分别为 $x_0=0.00$，$x_1=0.25$，$x_2=0.50$，$x_3=0.75$，$x_4=1.00$。</p>
+<p>再构造节点坐标矩阵 $P$，单元节点矩阵 $E$，边界布尔矩阵 $B$</p>
+<p>$$
+P =
+\left[
+\begin{matrix}
+0.00 \ 0.25 \ 0.50 \ 0.75 \ 1.00
+\end{matrix}
+\right],\quad
+E =
+\left[
+\begin{matrix}
+0 &amp; 1 \ 1 &amp; 2 \ 2 &amp; 3 \ 3 &amp; 4
+\end{matrix}
+\right],\quad
+B =
+\left[
+\begin{matrix}
+1 \ 0 \ 0 \ 0 \ 1
+\end{matrix}
+\right]
+$$</p>
+<pre><code class="language-python">import numpy as np
+# 均匀剖分(0,1)区间为n份
+n = 4
+# 节点坐标矩阵P
+P = np.linespace(0, 1, n+1)
+# 单元节点矩阵E
+E = np.transpose([np.arange(0, n), np.arange(1, n+1)])
+# 边界布尔矩阵B
+B = np.zeros(n, dtype=np.bool); B[0, -1] = True
+</code></pre>
+<h2 id="3-建立有限元空间">3. 建立有限元空间</h2>
+<h3 id="有限元空间">有限元空间</h3>
+<p>在第一步构造变分形式的时候，我们提到选取 $v\in H^1_0$，构造形如 $a(u, v)=(f, v)$ 的弱形式，而要进行有限元计算，则需要构造Sobolev空间 $H^1_0$ 的有限维子空间 $V_h$（其中 $h=\mathrm{h_i}$，这里构造的是一致网格，故 $h_i$ 为 $\frac{1}{4}$），其中 $u_h\in V_h$ 是次数不超过1的多项式，在区间 $(0, 1)$ 上属于函数空间 $H^1_0$，且有 $u_h(0)=u_h(1)=0$。</p>
+<p>最简单的分段线性函数空间 $V_h$ 是由分段线性函数组成的，它由节点上的一组值</p>
+<p>$$u_0=0, u_1, u_2, \cdots, u_{n-2}, u_{n-1}, u_n=0$$</p>
+<p>按照线性插值公式</p>
+<p>$$u_h(x)=\frac{x_i-x}{h_i}u_{i-1}+\frac{x-x_{i-1}}{h_i}u_i$$</p>
+<p>确定，称为<strong>线性有限元</strong>（一次有限元）空间。</p>
+<p>试探函数由 $n+1$ 个节点的值决定，故 $u_h$ 的自由度为 $n+1$，也即 $V_h$ 是 $n+1$ 维线性空间。</p>
+<p><strong>PS</strong>: <em>这里在构造试探函数空间 $V_h$ 的时候，仅说明了 $V_h\subset H^1_0$，而未带入边界条件</em></p>
+<h3 id="基底函数">基底函数</h3>
+<p>为推到有限元方程，需要构造有限元子空间 $V_h$ 的一组基底 $\phi_0, \phi_1, \cdots, \phi_{n-1}, \phi_n$。一般的，选择对每个节点构造**山形函数** $\phi_i$：</p>
+<p>$$
+\begin{align}
+&amp;\phi_0=
+\begin{cases}
+1 - \frac{x-x_0}{h_1},\quad &amp;0 \leqslant x \leqslant x_1 \\<br>
+0,\quad &amp;\text{else}
+\end{cases} \\<br>
+&amp;\phi_i=
+\begin{cases}
+1 + \frac{x-x_i}{h_i},\quad &amp;x_{i-1} \leqslant x \leqslant x_i \\<br>
+1 - \frac{x-x_i}{h_{i+1}},\quad &amp;x_i \leqslant x \leqslant x_{i+1} \\<br>
+0,\quad &amp;\text{else}
+\end{cases} \\<br>
+&amp;\phi_n=
+\begin{cases}
+1 + \frac{x-x_n}{h_n},\quad &amp;x_{n-1} \leqslant x \leqslant 1 \\<br>
+0,\quad &amp;\text{else}
+\end{cases}
+\end{align}
+$$</p>
+<p><img src="basis_function.png" alt="fig. Basis Function"></p>
+<p>显然 $\phi_0,\ \phi_1,\ \cdots,\ \phi_{n-1},\ \phi_n$ 线性无关，且组成 $V_h$ 的基底，使得 $V_h=\mathrm{span}{\phi_i}^n_{i=0}$，且对于任意的 $u_h\in V_h$，都有 $u_h=\sum^n_{i=1}u_i \phi_i(x),\ u_i=u_h(x_i)$。</p>
+<h3 id="离散化变分问题">离散化变分问题</h3>
+<p>将试探函数 $u_h=\sum^n_{i=0}u_i \phi_i$ 和检验函数 $v_h\in {\phi_i}_{i=0}^n$，带入到变分形式中，得到</p>
+<p>$$
+\int \nabla u_h \cdot \nabla v_h \mathrm{d}x= \int f \cdot v_h \mathrm{d}x \<br>
+\int \nabla \left(\sum^n_{j=0}u_j \phi_i\right) \cdot \nabla \phi_i \mathrm{d}x = \int f \cdot \phi_i \mathrm{d}x \<br>
+\sum^n_{j=0}\left(\int \nabla \phi_j \cdot \nabla \phi_i \mathrm{d}x \right) u_j = \int f \cdot \phi_i \mathrm{d}x \<br>
+$$</p>
+<p>积分以内积形式表示，则方程表现为：
+$$
+\sum^n_{j=0}\left(\nabla\phi_j, \nabla\phi_i\right)u_j = \left(f, \phi_i\right),\quad i=0,\cdots,n
+$$</p>
+<pre><code class="language-python">from scipy.integrate import quad
+# 定义函数空间V上内积
+def inner_product_1d(f0, f1, a, b):
+    return quad(lambda x: f0(x) * f1(x), a, b)[0]
+</code></pre>
+<h3 id="单元左右函数">单元左右函数</h3>
+<p>对于区间 $(x_i, x_{i+1})$，存在不为零的基函数 $\phi_i$ 和 $\phi_{i+1}$，且有</p>
+<p>$$
+\phi_i = 1 - \frac{x-x_i}{h_{i+1}}, \phi_{i+1} = 1 + \frac{x-x_{i+1}}{h_{i+1}},\quad x_{i} \leqslant x \leqslant x_{i+1}
+$$</p>
+<p><img src="double_basis_function_1_2_none.png" alt="fig. Basis Function 1 and 2"></p>
+<p>为方便计算起见，定义每个单元上的左函数、右函数</p>
+<p>$$
+\varphi_L = \frac{x-x_R}{x_L-x_R},\quad \varphi_L = \frac{x-x_L}{x_R-x_L}
+$$</p>
+<p><img src="LR_function.png" alt="fig. Left function"></p>
+<p>则区间上左右函数与基函数的对应关系如下：</p>
+<p>$$
+\begin{cases}
+\varphi^i_L(x) = \phi_{i-1}(x) \<br>
+\varphi^i_R(x) = \phi_{i}(x) \<br>
+\end{cases},\quad x\in (x_{i-1}, x_i),\quad i=1,\cdots, n
+$$</p>
+<pre><code class="language-python"># 定义左函数
+def phi_l(l, r):
+    return lambda x: (x - r) / (l - r)
+# 定义右函数
+def phi_r(l, r):
+    return lambda x: (x - l) / (r - l)
+# 定义左函数的一阶导数
+def phi_l_d1(l, r):
+    return lambda x: 1 / (l - r)
+# 定义右函数的一阶导数
+def phi_r_d1(l, r):
+    return lambda x: 1 / (r - l)
+</code></pre>
+<h2 id="4-建立有限元方程组">4. 建立有限元方程组</h2>
+<p>由离散变分形式 $\sum^n_{j=1}\left(\nabla\phi_j(x), \nabla\phi_i\right)u_j \mathrm{d}x = \left(f, \phi_i\right) \$， 其中 $\left(f, \phi_i\right)$ 和 $\left(\nabla\phi_j(x), \nabla\phi_i\right)$ 都为常数，故可以得到：</p>
+<p>$$
+\begin{cases}
+\sum^n_{j=1}\left(\nabla\phi_j(x), \nabla\phi_0\right)u_j \mathrm{d}x = \left(f, \phi_0\right) \\<br>
+\cdots \\<br>
+\sum^n_{j=1}\left(\nabla\phi_j(x), \nabla\phi_i\right)u_j \mathrm{d}x = \left(f, \phi_i\right) \\<br>
+\cdots \\<br>
+\sum^n_{j=1}\left(\nabla\phi_j(x), \nabla\phi_n\right)u_j \mathrm{d}x = \left(f, \phi_n\right) \\<br>
+\end{cases}
+$$</p>
+<p>即将有限元问题转化为求解线性方程组：</p>
+<p>$$KU=F$$</p>
+<h3 id="组装载荷列阵f">组装载荷列阵F</h3>
+<p>$F$ 称为<strong>总载荷列阵</strong></p>
+<p>$$
+F =
+\left[
+\begin{matrix}
+(f, \phi_0)\\<br>
+\cdots \\<br>
+(f, \phi_i)\\<br>
+\cdots \\<br>
+(f, \phi_n)\\<br>
+\end{matrix}
+\right]=
+\left[
+\begin{matrix}
+(f, \varphi^1_R)\\<br>
+(f, \varphi^1_L) + (f, \varphi^2_R) \\<br>
+\cdots \\<br>
+(f, \varphi^i_L) + (f, \varphi^{i+1}_R) \\<br>
+\cdots \\<br>
+(f, \varphi^{n-1}_L) + (f, \varphi^n_R) \\<br>
+(f, \varphi^n_L)\\<br>
+\end{matrix}
+\right]
+$$</p>
+<p>基于每一单元，计算载荷列阵，记为 $F_i$，称为<strong>单元载荷列阵</strong></p>
+<p>$$
+F_i =
+\left[
+\begin{matrix}
+(f, \varphi^i_L) \\<br>
+(f, \varphi^i_R)
+\end{matrix}
+\right], \quad i=1, \cdots,n
+$$</p>
+<pre><code class="language-python"># 计算单元载荷列阵, 并组装总载荷列阵
+for k, v in enumerate(E):
+    l_inx, r_inx = v
+    l_cor, r_cor = P[[l_inx, r_inx]]
+    f_lst[l_inx] += inner_product(f, phi_l(l_cor, r_cor), l_cor, r_cor)
+    f_lst[r_inx] += inner_product(f, phi_r(l_cor, r_cor), l_cor, r_cor)
+</code></pre>
+<h3 id="组装刚度矩阵k">组装刚度矩阵K</h3>
+<p>$K$ 称为<strong>总刚度矩阵</strong></p>
+<p>$$
+\begin{align}K &amp;=
+\left[
+\begin{matrix}
+(\phi_0, \phi_0) &amp; \cdots &amp; (\phi_i, \phi_0) &amp; \cdots &amp; (\phi_n, \phi_0) \\<br>
+\vdots           &amp; \ddots &amp; \vdots           &amp; \ddots &amp; \vdots           \\<br>
+(\phi_0, \phi_i) &amp; \cdots &amp; (\phi_i, \phi_i) &amp; \cdots &amp; (\phi_n, \phi_i) \\<br>
+\vdots           &amp; \ddots &amp; \vdots           &amp; \ddots &amp; \vdots           \\<br>
+(\phi_0, \phi_n) &amp; \cdots &amp; (\phi_i, \phi_n) &amp; \cdots &amp; (\phi_n, \phi_n) \\<br>
+\end{matrix}
+\right]\\<br>
+&amp;=\left[
+\begin{matrix}
+a^1_{LL} &amp; a^1_{RL} &amp;  &amp;  &amp;  &amp;  &amp; \\<br>
+a^1_{LR} &amp; a^1_{RR}+a^2_{LL} &amp; a^2_{RL} &amp;  &amp;  &amp;  &amp; \\<br>
+&amp; a^2_{LR} &amp; a^2_{RR}+a^3_{LL} &amp; a^3_{RL} &amp;  &amp; \\<br>
+&amp;  &amp; \ddots &amp; \ddots &amp; \ddots &amp; \\<br>
+&amp;  &amp;  &amp; a^{n-1}_{LR} &amp; a^{n-1}_{RR}+a^n_{LL} &amp; a^n_{RL} \\<br>
+&amp;  &amp;  &amp;   &amp; a^n_{LR} &amp; a^n_{RR} \\<br>
+\end{matrix}
+\right]
+\end{align}
+$$</p>
+<p>基于每一单元，计算刚度矩阵，记为 $K_i$，称为<strong>单元刚度矩阵</strong></p>
+<p>$$
+K_i =
+\left[
+\begin{matrix}
+(\varphi^i_L, \varphi^i_L) &amp; (\varphi^i_L, \varphi^i_R) \\<br>
+(\varphi^i_R, \varphi^i_L) &amp; (\varphi^i_R, \varphi^i_R)
+\end{matrix}
+\right],\quad i=1, \cdots,n
+$$</p>
+<p>由单元刚度矩阵组装总刚度矩阵的过程如下：</p>
+<p><img src="assembly_total_stiffness_matrix.png" alt="fig. Assembly Stiffness Matrix"></p>
+<p>可知总刚度矩阵为<strong>三对角矩阵</strong>。</p>
+<pre><code class="language-python"># 计算单元刚度矩阵, 并组装总刚度矩阵
+for k, v in enumerate(E):
+    l_inx, r_inx = v
+    l_cor, r_cor = P[[l_inx, r_inx]]
+    a_mat[l_inx,l_inx]+=inner_product(phi_l_d1(l_cor,r_cor), phi_l_d1(l_cor,r_cor), l_cor, r_cor)
+    a_mat[l_inx,r_inx]+=inner_product(phi_r_d1(l_cor,r_cor), phi_l_d1(l_cor,r_cor), l_cor, r_cor)
+    a_mat[r_inx,l_inx]+=inner_product(phi_l_d1(l_cor,r_cor), phi_r_d1(l_cor,r_cor), l_cor, r_cor)
+    a_mat[r_inx,r_inx]+=inner_product(phi_r_d1(l_cor,r_cor), phi_r_d1(l_cor,r_cor), l_cor, r_cor)
+</code></pre>
+<h3 id="位移列阵u">位移列阵U</h3>
+<p>$U$ 称为<strong>总位移列阵</strong></p>
+<p>$U$ 中的每一个元素 $u_i$ 即为函数 $u_h$ 在 $x_i$ 点处的取值</p>
+<p>$$U=\left[\begin{matrix}u_0 &amp; u_1 &amp; \cdots &amp; u_{n-1} &amp; u_n \end{matrix}\right]^T$$</p>
+<h3 id="边界条件处理">边界条件处理</h3>
+<h4 id="dirichlet边界条件">Dirichlet边界条件</h4>
+<p>由<strong>Dirichlet边界条件</strong>可知 $u_0=u_n=0$，应用在总刚度矩阵中，则有</p>
+<p>$$
+K_0 U = F_0
+$$</p>
+<p>$$
+\left[
+\begin{matrix}
+1 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; 0 &amp; 0 \\<br>
+a_{1, 0} &amp; a_{11} &amp; a_{12} &amp; \cdots &amp; 0 &amp; 0 &amp; 0\\<br>
+0 &amp; a_{11} &amp; a_{12} &amp; \cdots &amp; 0 &amp; 0 &amp; 0 \\<br>
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots \\<br>
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; a_{n-2, n-2} &amp; a_{n-2, n-1} &amp; 0 \\<br>
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; a_{n-1, n-2} &amp; a_{n-1, n-1} &amp; a_{n-1, n} \\<br>
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; 0 &amp; 1 \\<br>
+\end{matrix}
+\right]
+\left[
+\begin{matrix}
+u_0 \\ u_1 \\ u_2 \\ \vdots \\ u_{n-2} \\ u_{n-1} \\ u_n \\<br>
+\end{matrix}
+\right]=
+\left[
+\begin{matrix}
+0 \\ f_1 \\ f_2 \\ \vdots \\ f_{n-2} \\ f_{n-1} \\ 0 \\<br>
+\end{matrix}
+\right]
+$$</p>
+<p>为保持三对角矩阵形式，做如下变换：</p>
+<p>$$
+K_0 U = F_0
+$$</p>
+<p>$$
+\left[
+\begin{matrix}
+1 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; 0 &amp; 0 \\<br>
+0 &amp; a_{11} &amp; a_{12} &amp; \cdots &amp; 0 &amp; 0 &amp; 0\\<br>
+0 &amp; a_{11} &amp; a_{12} &amp; \cdots &amp; 0 &amp; 0 &amp; 0 \\<br>
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots &amp; \vdots \\<br>
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; a_{n-2, n-2} &amp; a_{n-2, n-1} &amp; 0 \\<br>
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; a_{n-1, n-2} &amp; a_{n-1, n-1} &amp; 0 \\<br>
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; 0 &amp; 1 \\<br>
+\end{matrix}
+\right]
+\left[
+\begin{matrix}
+u_0 \\ u_1 \\ u_2 \\ \vdots \\ u_{n-2} \\ u_{n-1} \\ u_n \\<br>
+\end{matrix}
+\right]=
+\left[
+\begin{matrix}
+0 \\ f_1 - a_{1, 0}u_0 \\ f_2 \\ \vdots \\ f_{n-2} \\ f_{n-1}-a_{n-1, n}u_n \\ 0 \\<br>
+\end{matrix}
+\right]
+$$</p>
+<pre><code class="language-python"># 应用边界条件
+self.f_lst[B] = 0
+# 保持三对角形式
+self.a_mat[B, :] = 0
+self.a_mat[:, B] = 0
+self.a_mat[B, B] = 1
+</code></pre>
+<h2 id="5-求解有限元方程组">5. 求解有限元方程组</h2>
+<p>求解线性方程组 $K_0 U=F_0$，具体方法此处不再详述。</p>
+<pre><code class="language-python">from scipy.linalg import solve
+u_lst = solve(a_mat, f_lst)
+</code></pre>
+<h2 id="6-误差检验">6. 误差检验</h2>
+<p>若已知方程真解 $u(x)$，且计算得到数值解 $u_h(x)$，则可计算误差
+$$
+e(x)=u(x)-u_h(x)
+$$
+定义 $L^2$ 空间上的误差范数
+$$
+E_N^2=||e(x)||^2=\sum^N_{i=1}\int_{I_i}|u(x)-u_h(x)|^2\mathrm{d}x
+$$
+若计算得
+$$
+\frac{E_N}{E_{2N}}\approx4
+$$
+则说明数值计算结果是有效的。</p>
+<h2 id="7-计算结果">7. 计算结果</h2>
+<h3 id="计算数值解">计算数值解</h3>
+<p>易知选取的边值问题真解为 $u(x)=\sin(\pi x)$</p>
+<p>取 $N=4$，计算结果如下</p>
+<table>
+<thead>
+<tr>
+<th>$x_{i}$</th>
+<th>0.0</th>
+<th>0.25</th>
+<th>0.5</th>
+<th>0.75</th>
+<th>1.0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$u_{i}$</td>
+<td>0.0</td>
+<td>0.70710678</td>
+<td>1.0</td>
+<td>0.70710678</td>
+<td>0.0</td>
+</tr>
+</tbody>
+</table>
+<p>$$
+E_4=0.03928434776482386
+$$</p>
+<p><img src="myplot4.png" alt="fig. Numerical Solution (split 4)"></p>
+<p>取 $N=8$，计算结果如下</p>
+<table>
+<thead>
+<tr>
+<th>$x_{i}$</th>
+<th>0.0</th>
+<th>0.125</th>
+<th>0.25</th>
+<th>0.375</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$u_i$</td>
+<td>0.0</td>
+<td>0.38268343</td>
+<td>0.70710678</td>
+<td>0.92387953</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>0.5</th>
+<th>0.625</th>
+<th>0.75</th>
+<th>0.875</th>
+<th>1.0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.0</td>
+<td>0.92387953</td>
+<td>0.70710678</td>
+<td>0.38268343</td>
+<td>0.0</td>
+</tr>
+</tbody>
+</table>
+<p>$$
+E_8=0.00992091991146414
+$$</p>
+<p><img src="myplot8.png" alt="fig. Numerical Solution (split 8)"></p>
+<h3 id="计算误差阶数">计算误差阶数</h3>
+<p>$$
+\frac{E_4}{E_8}=\frac{0.03928434776482386}{0.00992091991146414}=3.9597485026997092\approx 4
+$$</p>
+<p>可见 $P=\frac{E_N}{E_{2N}}$ 趋近于 4，所以该数值方法是有效的</p>
+<p><strong>PS</strong>: 文中只简单的展示了部分核心代码，具体的实现请转到 <a href="https://github.com/EastMagica/fempy">Github: fempy</a>，代码实现较为仓促，如有问题，欢迎批评指正~</p>
+]]></content></item></channel></rss>
