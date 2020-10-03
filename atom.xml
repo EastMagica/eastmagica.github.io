@@ -97,9 +97,11 @@ $$</p>
 <h3 id="离散化变分问题">离散化变分问题</h3>
 <p>将试探函数 $u_h=\sum^n_{i=0}u_i \phi_i$ 和检验函数 $v_h\in {\phi_i}_{i=0}^n$，带入到变分形式中，得到</p>
 <p>$$
-\int \nabla u_h \cdot \nabla v_h \mathrm{d}x= \int f \cdot v_h \mathrm{d}x \\<br>
-\int \nabla \left(\sum^n_{j=0}u_j \phi_i\right) \cdot \nabla \phi_i \mathrm{d}x = \int f \cdot \phi_i \mathrm{d}x \\<br>
-\sum^n_{j=0}\left(\int \nabla \phi_j \cdot \nabla \phi_i \mathrm{d}x \right) u_j = \int f \cdot \phi_i \mathrm{d}x \\<br>
+\begin{align}
+\int \nabla u_h \cdot \nabla v_h \mathrm{d}x &amp;= \int f \cdot v_h \mathrm{d}x \\<br>
+\int \nabla \left(\sum^n_{j=0}u_j \phi_i\right) \cdot \nabla \phi_i \mathrm{d}x &amp;= \int f \cdot \phi_i \mathrm{d}x \\<br>
+\sum^n_{j=0}\left(\int \nabla \phi_j \cdot \nabla \phi_i \mathrm{d}x \right) u_j &amp;= \int f \cdot \phi_i \mathrm{d}x \\<br>
+\end{align}
 $$</p>
 <p>积分以内积形式表示，则方程表现为：
 $$
@@ -113,7 +115,7 @@ def inner_product_1d(f0, f1, a, b):
 <h3 id="单元左右函数">单元左右函数</h3>
 <p>对于区间 $(x_i, x_{i+1})$，存在不为零的基函数 $\phi_i$ 和 $\phi_{i+1}$，且有</p>
 <p>$$
-\phi_i = 1 - \frac{x-x_i}{h_{i+1}}, \phi_{i+1} = 1 + \frac{x-x_{i+1}}{h_{i+1}},\quad x_{i} \leqslant x \leqslant x_{i+1}
+\phi_i = 1 - \frac{x-x_i}{h_{i+1}},\quad \phi_{i+1} = 1 + \frac{x-x_{i+1}}{h_{i+1}},\quad x_{i} \leqslant x \leqslant x_{i+1}
 $$</p>
 <p><img src="double_basis_function_1_2_none.png" alt="fig. Basis Function 1 and 2"></p>
 <p>为方便计算起见，定义每个单元上的左函数、右函数</p>
