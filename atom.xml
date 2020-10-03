@@ -7,7 +7,7 @@
 <p>有限元方法多用于椭圆方程的求解，考虑最为常见的椭圆型方程——Poisson方程，如下：</p>
 <p>$$
 \begin{cases}
--\nabla^2 u=f(x),\quad &amp;x\in \Omega \<br>
+-\nabla^2 u=f(x),\quad &amp;x\in \Omega \\<br>
 u|_{\Gamma}=\alpha(x),\quad &amp;x\in \Gamma
 \end{cases}
 $$</p>
@@ -15,7 +15,7 @@ $$</p>
 <p>我们选取具体的一维Poisson方程，来讲一讲有限元方法的具体步骤：</p>
 <p>$$
 \begin{cases}
--\nabla^2 u=\pi^2 \mathrm{sin}(\pi x),\quad &amp;x\in (0, 1) \<br>
+-\nabla^2 u=\pi^2 \mathrm{sin}(\pi x),\quad &amp;x\in (0, 1) \\<br>
 u(0)=0, u(1)=0
 \end{cases}
 $$</p>
@@ -34,19 +34,19 @@ $$</p>
 P =
 \left[
 \begin{matrix}
-0.00 \ 0.25 \ 0.50 \ 0.75 \ 1.00
+0.00 \\ 0.25 \\ 0.50 \\ 0.75 \\ 1.00
 \end{matrix}
 \right],\quad
 E =
 \left[
 \begin{matrix}
-0 &amp; 1 \ 1 &amp; 2 \ 2 &amp; 3 \ 3 &amp; 4
+0 &amp; 1 \\ 1 &amp; 2 \\ 2 &amp; 3 \\ 3 &amp; 4
 \end{matrix}
 \right],\quad
 B =
 \left[
 \begin{matrix}
-1 \ 0 \ 0 \ 0 \ 1
+1 \\ 0 \\ 0 \\ 0 \\ 1
 \end{matrix}
 \right]
 $$</p>
@@ -97,9 +97,9 @@ $$</p>
 <h3 id="离散化变分问题">离散化变分问题</h3>
 <p>将试探函数 $u_h=\sum^n_{i=0}u_i \phi_i$ 和检验函数 $v_h\in {\phi_i}_{i=0}^n$，带入到变分形式中，得到</p>
 <p>$$
-\int \nabla u_h \cdot \nabla v_h \mathrm{d}x= \int f \cdot v_h \mathrm{d}x \<br>
-\int \nabla \left(\sum^n_{j=0}u_j \phi_i\right) \cdot \nabla \phi_i \mathrm{d}x = \int f \cdot \phi_i \mathrm{d}x \<br>
-\sum^n_{j=0}\left(\int \nabla \phi_j \cdot \nabla \phi_i \mathrm{d}x \right) u_j = \int f \cdot \phi_i \mathrm{d}x \<br>
+\int \nabla u_h \cdot \nabla v_h \mathrm{d}x= \int f \cdot v_h \mathrm{d}x \\<br>
+\int \nabla \left(\sum^n_{j=0}u_j \phi_i\right) \cdot \nabla \phi_i \mathrm{d}x = \int f \cdot \phi_i \mathrm{d}x \\<br>
+\sum^n_{j=0}\left(\int \nabla \phi_j \cdot \nabla \phi_i \mathrm{d}x \right) u_j = \int f \cdot \phi_i \mathrm{d}x \\<br>
 $$</p>
 <p>积分以内积形式表示，则方程表现为：
 $$
@@ -124,8 +124,8 @@ $$</p>
 <p>则区间上左右函数与基函数的对应关系如下：</p>
 <p>$$
 \begin{cases}
-\varphi^i_L(x) = \phi_{i-1}(x) \<br>
-\varphi^i_R(x) = \phi_{i}(x) \<br>
+\varphi^i_L(x) = \phi_{i-1}(x) \\<br>
+\varphi^i_R(x) = \phi_{i}(x) \\<br>
 \end{cases},\quad x\in (x_{i-1}, x_i),\quad i=1,\cdots, n
 $$</p>
 <pre><code class="language-python"># 定义左函数
@@ -142,7 +142,7 @@ def phi_r_d1(l, r):
     return lambda x: 1 / (r - l)
 </code></pre>
 <h2 id="4-建立有限元方程组">4. 建立有限元方程组</h2>
-<p>由离散变分形式 $\sum^n_{j=1}\left(\nabla\phi_j(x), \nabla\phi_i\right)u_j \mathrm{d}x = \left(f, \phi_i\right) \$， 其中 $\left(f, \phi_i\right)$ 和 $\left(\nabla\phi_j(x), \nabla\phi_i\right)$ 都为常数，故可以得到：</p>
+<p>由离散变分形式 $\sum^n_{j=1}\left(\nabla\phi_j(x), \nabla\phi_i\right)u_j \mathrm{d}x = \left(f, \phi_i\right) \\$， 其中 $\left(f, \phi_i\right)$ 和 $\left(\nabla\phi_j(x), \nabla\phi_i\right)$ 都为常数，故可以得到：</p>
 <p>$$
 \begin{cases}
 \sum^n_{j=1}\left(\nabla\phi_j(x), \nabla\phi_0\right)u_j \mathrm{d}x = \left(f, \phi_0\right) \\<br>
