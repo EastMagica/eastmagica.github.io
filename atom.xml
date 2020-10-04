@@ -38,24 +38,18 @@ $$</p>
 <p>将 $x, y$ 区间分别均匀分割为 $n$ 份, 则可得到 $(n+1)^2$ 个点, $2n^2$ 个三角单元。</p>
 <p>构造节点坐标矩阵 $points$，单元节点序号矩阵 $simplices$，边界节点布尔矩阵 $PBnd$:</p>
 <p>$$
-points = \left[
-\begin{matrix}
+points = \left[\begin{matrix}
 0.0 &amp; 0.0 &amp; 0.0 &amp; 0.5 &amp; 0.5 &amp; 0.5 &amp; 1.0 &amp; 1.0 &amp; 1.0 \\<br>
 0.0 &amp; 0.5 &amp; 1.0 &amp; 0.0 &amp; 0.5 &amp; 1.0 &amp; 0.0 &amp; 0.5 &amp; 1.0 \\<br>
-\end{matrix}^T
-\right] \\</p>
-<p>simplices = \left[
-\begin{matrix}
+\end{matrix}^T\right] \\<br>
+simplices = \left[\begin{matrix}
 3 &amp; 4 &amp; 6 &amp; 7 &amp; 1 &amp; 2 &amp; 4 &amp; 5 \\<br>
 4 &amp; 5 &amp; 7 &amp; 8 &amp; 0 &amp; 1 &amp; 3 &amp; 4 \\<br>
 0 &amp; 1 &amp; 3 &amp; 4 &amp; 4 &amp; 5 &amp; 7 &amp; 8 \\<br>
-\end{matrix}^T
-\right] \\</p>
-<p>PBnd = \left[
-\begin{matrix}
+\end{matrix}^T\right] \\<br>
+PBnd = \left[\begin{matrix}
 1 &amp; 1 &amp; 1 &amp; 1 &amp; 0 &amp; 1 &amp; 1 &amp; 1 &amp; 1
-\end{matrix}^T
-\right]
+\end{matrix}^T\right]
 $$</p>
 <h2 id="3-建立有限元空间">3. 建立有限元空间</h2>
 <h3 id="有限元空间">有限元空间</h3>
@@ -81,9 +75,11 @@ $$</p>
 <h3 id="离散化变分问题">离散化变分问题</h3>
 <p>将试探函数 $u_h=\sum^N_{i=0}u_i \phi_i$ 和检验函数 $v_h\in {\phi_i}^N_{i=1}$，带入到变分形式中，得到</p>
 <p>$$
-\iint_K \nabla u_h \cdot \nabla v_h \mathrm{d}x\mathrm{d}y= \iint_K f \cdot v_h \mathrm{d}x\mathrm{d}y \\<br>
-\iint_K \nabla \left(\sum^N_{j=1}u_j \phi_i\right) \cdot \nabla \phi_i \mathrm{d}x\mathrm{d}y = \iint_K f \cdot \phi_i \mathrm{d}x\mathrm{d}y \\<br>
-\sum^N_{j=1}\left(\iint \nabla \phi_j \cdot \nabla \phi_i \mathrm{d}x\mathrm{d}y \right) u_j = \iint_K f \cdot \phi_i \mathrm{d}x\mathrm{d}y \\<br>
+\begin{align}
+\iint_K \nabla u_h \cdot \nabla v_h \mathrm{d}x\mathrm{d}y &amp;= \iint_K f \cdot v_h \mathrm{d}x\mathrm{d}y \\<br>
+\iint_K \nabla \left(\sum^N_{j=1}u_j \phi_i\right) \cdot \nabla \phi_i \mathrm{d}x\mathrm{d}y &amp;= \iint_K f \cdot \phi_i \mathrm{d}x\mathrm{d}y \\<br>
+\sum^N_{j=1}\left(\iint \nabla \phi_j \cdot \nabla \phi_i \mathrm{d}x\mathrm{d}y \right) u_j &amp;= \iint_K f \cdot \phi_i \mathrm{d}x\mathrm{d}y \\<br>
+\eng{align}
 $$</p>
 <p>积分以内积形式表示，则方程表现为:
 $$
@@ -100,10 +96,10 @@ $$</p>
 $$</p>
 <p>其中</p>
 <p>$$
-2\Delta_{123}=\left|\begin{matrix}1 &amp; x_1 &amp; y_1 \\ 1 &amp; x_2 &amp; y_2 \\ 1 &amp; x_3 &amp; y_3\end{matrix}\right|, \quad
-2\Delta_{p23}=\left|\begin{matrix}1 &amp; x &amp; y \\ 1 &amp; x_2 &amp; y_2 \\ 1 &amp; x_3 &amp; y_3\end{matrix}\right|, \quad
-2\Delta_{1p3}=\left|\begin{matrix}1 &amp; x_1 &amp; y_1 \\ 1 &amp; x &amp; y \\ 1 &amp; x_3 &amp; y_3\end{matrix}\right|, \quad
-2\Delta_{12p}=\left|\begin{matrix}1 &amp; x_1 &amp; y_1 \\ 1 &amp; x_2 &amp; y_2 \\ 1 &amp; x &amp; y\end{matrix}\right|, \quad
+\Delta_{123}=\frac{1}{2}\left|\begin{matrix}1 &amp; x_1 &amp; y_1 \\ 1 &amp; x_2 &amp; y_2 \\ 1 &amp; x_3 &amp; y_3\end{matrix}\right|, \quad
+\Delta_{p23}=\frac{1}{2}\left|\begin{matrix}1 &amp; x &amp; y \\ 1 &amp; x_2 &amp; y_2 \\ 1 &amp; x_3 &amp; y_3\end{matrix}\right|, \quad
+\Delta_{1p3}=\frac{1}{2}\left|\begin{matrix}1 &amp; x_1 &amp; y_1 \\ 1 &amp; x &amp; y \\ 1 &amp; x_3 &amp; y_3\end{matrix}\right|, \quad
+\Delta_{12p}=\frac{1}{2}\left|\begin{matrix}1 &amp; x_1 &amp; y_1 \\ 1 &amp; x_2 &amp; y_2 \\ 1 &amp; x &amp; y\end{matrix}\right|, \quad
 $$</p>
 <p>即表现为三维空间中的三个平面:</p>
 <p><img src="unit_basis_function.png" alt="fig. Unit Basis Function"></p>
@@ -205,7 +201,7 @@ e(x, y)=u(x, y)-u_h(x, y)
 $$</p>
 <p>定义 $L^2$ 空间上的误差范数</p>
 <p>$$
-E_N^2=||e(x)||^2=\sum^{M-1}<em>{i=0}\iint</em>{K_i}||u(x, y)-u_h(x, y)||^2\mathrm{d}x\mathrm{d}y
+E_N^2=||e(x)||^2=\sum^{M-1}_{i=0}\iint_{K_i}||u(x, y)-u_h(x, y)||^2\mathrm{d}x\mathrm{d}y
 $$</p>
 <p>若计算得</p>
 <p>$$
@@ -307,7 +303,6 @@ y &amp;=y_1\lambda_1 + y_2\lambda_2 + y_3\lambda_3 \\<br>
 1 &amp;= \lambda_1 + \lambda_2 + \lambda_3
 \end{cases}
 $$</p>
-<p><img src="area_coordinate.png" alt="area_coordinate"></p>
 <h3 id="方法一直接计算">方法一:直接计算</h3>
 <p>由面积坐标的定义可知 $\varphi_1=\lambda_1, \varphi_2=\lambda_2, \varphi_3=\lambda_3$，且有</p>
 <p>$$
@@ -379,20 +374,16 @@ x_3 &amp; y_3 \\<br>
 \end{matrix}\right]
 $$</p>
 <p>坐标变换的Jacobi矩阵为:</p>
-<h1 id="right">$$
+<h1 id="endmatrixright">$$
 J_K=
-\left|
-\begin{matrix}
+\left|\begin{matrix}
 \frac{\partial x}{\partial \lambda_1} &amp; \frac{\partial y}{\partial \lambda_1} \\<br>
 \frac{\partial x}{\partial \lambda_2} &amp; \frac{\partial y}{\partial \lambda_2} \\<br>
-\end{matrix}
-\right|</h1>
-<p>\left|
-\begin{matrix}
+\end{matrix}\right|</h1>
+<p>\left|\begin{matrix}
 x_1 - x_3 &amp; y_1 - y_3 \\<br>
 x_2 - x_3 &amp; y_2 - y_3 \\<br>
-\end{matrix}
-\right|
+\end{matrix}\right|
 $$</p>
 <p>则三角单元上的Gauss求积公式为:</p>
 <p>$$
