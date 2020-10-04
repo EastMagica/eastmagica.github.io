@@ -1,8 +1,405 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>East Magica</title><link>https://blog.eastmagica.com/atom.xml</link><description>East Magica</description><generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en</language><lastBuildDate>Wed, 31 Jul 2019 18:52:10 +0800</lastBuildDate><item><title>About</title><link>https://blog.eastmagica.com/about/</link><pubDate>Sat, 05 Sep 2020 11:30:55 +0800</pubDate><guid>https://blog.eastmagica.com/about/</guid><description>人生到处知何似，应似飞鸿踏雪泥 About me 计算数学研究生在读，喜欢数学，喜欢代码，业余也会玩一玩摄影。</description><content type="html"><![CDATA[<blockquote>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>East Magica</title><link>https://blog.eastmagica.com/atom.xml</link><description>East Magica</description><generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en</language><lastBuildDate>Fri, 09 Aug 2019 18:01:35 +0800</lastBuildDate><item><title>About</title><link>https://blog.eastmagica.com/about/</link><pubDate>Sat, 05 Sep 2020 11:30:55 +0800</pubDate><guid>https://blog.eastmagica.com/about/</guid><description>人生到处知何似，应似飞鸿踏雪泥 About me 计算数学研究生在读，喜欢数学，喜欢代码，业余也会玩一玩摄影。</description><content type="html"><![CDATA[<blockquote>
 <p>人生到处知何似，应似飞鸿踏雪泥</p>
 </blockquote>
 <h2 id="about-me">About me</h2>
 <p>计算数学研究生在读，喜欢数学，喜欢代码，业余也会玩一玩摄影。</p>
+]]></content></item><item><title>有限元方法入门（2）:二维算例（三角剖分）</title><link>https://blog.eastmagica.com/posts/2019/fem-2/</link><pubDate>Fri, 09 Aug 2019 18:01:35 +0800</pubDate><guid>https://blog.eastmagica.com/posts/2019/fem-2/</guid><description>上一篇 一维有限元方法 谈到, 在一维空间上, 由于网格剖分形式单一, 所以FEM与FDM相比, 并没有太大的优势. 而在二维空间中, 由于FDM对于规则网</description><content type="html"><![CDATA[<p>上一篇 <a href="../fem-1">一维有限元方法</a> 谈到, 在一维空间上, 由于网格剖分形式单一, 所以FEM与FDM相比, 并没有太大的优势. 而在二维空间中, 由于FDM对于规则网格的依赖性较高, FEM的优势便显现出来.</p>
+<p>同样是选择椭圆方程, 应用二维空间上的有限元方法, 考虑最常见的Poisson方程, 如下:</p>
+<p>$$
+\begin{cases}
+-\nabla^2 u=f(x, y), \quad &amp;x, y\in \Omega \\<br>
+u|_{\Gamma}=\alpha(x, y), \quad &amp;x, y\in \Gamma
+\end{cases}
+$$</p>
+<p>其中 $\Omega\in \mathbb{R}^2$ 是二维区域上的一个有界开集, $\Gamma$ 是区域 $\Omega$ 的边界.</p>
+<!-- raw HTML omitted -->
+<p>我们选取一个简单的二维Poisson方程:</p>
+<p>$$
+\begin{cases}
+-\nabla^2 u=2\pi^2 \mathrm{sin}(\pi x)\mathrm{sin}(\pi y)\\<br>
+u(0, y)=u(1, y)=0, \ u(x, 0)=u(x, 1)=0
+\end{cases}, \quad x\in [0, 1], y\in [0, 1]
+$$</p>
+<p>显然, 该方程的真解是 $u(x, y)=\mathrm{sin}(\pi x)\mathrm{sin}(\pi y)$.</p>
+<h2 id="1-构造变分形式">1. 构造变分形式</h2>
+<p>选取检验函数 $v \in H^1_0$, 乘以 $-\nabla^2 u=f$ 的两侧, 对两边积分, 运用Green公式, 并带入边界条件, 可以得到:</p>
+<p>$$
+-\iint \nabla u\cdot \nabla v \mathrm{d}x\mathrm{d}y= \iint f\cdot v \mathrm{d}x\mathrm{d}y
+$$</p>
+<p>即得到边值的变分形式 $a(u, v)=(f, v)$.</p>
+<h2 id="2-区域三角剖分">2. 区域三角剖分</h2>
+<p>一般来说, 三角区域剖分没有特殊的限制. 但为构造<strong>最接近于规则化</strong>的网格, 则需要符合<strong>Delaunay三角剖分</strong>准则, 即:</p>
+<ol>
+<li><strong>唯一性</strong>: 在Delaunay三角形网中任一三角形的外接圆范围内不会有其它点存在.</li>
+<li><strong>最大化最小角</strong>: 在散点集可能形成的三角剖分中, Delaunay三角剖分所形成的三角形的最小角最大.从这个意义上讲, Delaunay三角网是&quot;最接近于规则化的&quot;的三角网.具体的说是指在两个相邻的三角形构成凸四边形的对角线, 在相互交换后, 六个内角的最小角不再增大.</li>
+</ol>
+<p>为简单起见, 在矩形区域 $[0, 1]\times [0, 1]$ 上, 创建规则的三角网格, 具体形式如下:</p>
+<p><img src="triangle_mesh.png" alt="fig. 2D Triangular Mesh"></p>
+<p>将 $x, y$ 区间分别均匀分割为 $n$ 份, 则可得到 $(n+1)^2$ 个点, $2n^2$ 个三角单元.</p>
+<p>构造节点坐标矩阵 $points$, 单元节点序号矩阵 $simplices$, 边界节点布尔矩阵 $PBnd$:</p>
+<p>$$
+points = \left[
+\begin{matrix}
+0.0 &amp; 0.0 &amp; 0.0 &amp; 0.5 &amp; 0.5 &amp; 0.5 &amp; 1.0 &amp; 1.0 &amp; 1.0 \\<br>
+0.0 &amp; 0.5 &amp; 1.0 &amp; 0.0 &amp; 0.5 &amp; 1.0 &amp; 0.0 &amp; 0.5 &amp; 1.0 \\<br>
+\end{matrix}^T
+\right] \\</p>
+<p>simplices = \left[
+\begin{matrix}
+3 &amp; 4 &amp; 6 &amp; 7 &amp; 1 &amp; 2 &amp; 4 &amp; 5 \\<br>
+4 &amp; 5 &amp; 7 &amp; 8 &amp; 0 &amp; 1 &amp; 3 &amp; 4 \\<br>
+0 &amp; 1 &amp; 3 &amp; 4 &amp; 4 &amp; 5 &amp; 7 &amp; 8 \\<br>
+\end{matrix}^T
+\right] \\</p>
+<p>PBnd = \left[
+\begin{matrix}
+1 &amp; 1 &amp; 1 &amp; 1 &amp; 0 &amp; 1 &amp; 1 &amp; 1 &amp; 1
+\end{matrix}^T
+\right]
+$$</p>
+<h2 id="3-建立有限元空间">3. 建立有限元空间</h2>
+<h3 id="有限元空间">有限元空间</h3>
+<p>在第一步构造变分形式的时候, 我们提到选取 $v\in H^1_0$, 构造形如 $a(u, v)=(f, v)$ 的弱形式, 而要进行有限元计算, 则需要构造Sobolev空间 $H^1_0$ 的有限维子空间 $V_h$（其中 $u_h\in V_h$ 是次数不超过1的多项式, 在区域 $[0, 1]\times [0, 1]$ 上属于函数空间 $H^1_0$, 且有 $u_h(x, y)=0, x, y\in\partial \Omega$）.</p>
+<p>最简单的分段线性函数空间 $V_h$ 是由分段线性函数组成的, 它由节点上的一组值</p>
+<p>$$u_0=0, u_1, u_2, \cdots, u_{N-2}, u_{N-1}, u_N=0$$</p>
+<p>按照一次Lagrange型插值公式</p>
+<p>$$u_h(x, y)=L_1^i u_1^i + L_2^i u_2^i + L_3^i u_3^i, \quad x, y \in \Delta_i, \quad i=0, \cdots, M-1$$</p>
+<p>所确定, 称为<strong>线性有限元</strong>空间.</p>
+<p>试探函数由 $N$ 个节点的值决定, 故 $u_h$ 的自由度为 $N$, 也即 $V_h$ 是 $N$ 维线性空间.</p>
+<p><strong>PS</strong>: <em>这里在构造试探函数空间 $V_h$ 的时候, 仅说明了 $V_h\subset H^1_0$, 而未带入边界条件</em></p>
+<h3 id="基底函数">基底函数</h3>
+<p>与一维情形相似的, 我们在二维区域上同样创建一种&quot;山形函数&quot;, 即节点的基函数在该节点处取值为1, 在其他节点处取值为0, 数学表示为:</p>
+<p>$$
+\phi_i(x_j)=\delta_{ij}=
+\begin{cases}
+1, &amp;i=j \\<br>
+0, &amp;i\neq j
+\end{cases}
+$$</p>
+<p><img src="basis_function.png" alt="fig. Basis Function"></p>
+<p>同样的, $\phi_0, \ \phi_1, \ \cdots, \ \phi_{N-1}, \ \phi_N$ 线性无关, 且组成 $V_h$ 的基底, 使得 $V_h=\mathrm{span}{\phi_i}^N_{i=1}$, 且对于任意的 $u_h\in V_h$, 都有 $u_h=\sum^N_{i=1}u_i \phi_i, \ u_i=u_h(x_i, y_i)$.</p>
+<h3 id="离散化变分问题">离散化变分问题</h3>
+<p>将试探函数 $u_h=\sum^N_{i=0}u_i \phi_i$ 和检验函数 $v_h\in {\phi_i}^N_{i=1}$, 带入到变分形式中, 得到</p>
+<p>$$
+\iint_K \nabla u_h \cdot \nabla v_h \mathrm{d}x\mathrm{d}y= \iint_K f \cdot v_h \mathrm{d}x\mathrm{d}y \\<br>
+\iint_K \nabla \left(\sum^N_{j=1}u_j \phi_i\right) \cdot \nabla \phi_i \mathrm{d}x\mathrm{d}y = \iint_K f \cdot \phi_i \mathrm{d}x\mathrm{d}y \\<br>
+\sum^N_{j=1}\left(\iint \nabla \phi_j \cdot \nabla \phi_i \mathrm{d}x\mathrm{d}y \right) u_j = \iint_K f \cdot \phi_i \mathrm{d}x\mathrm{d}y \\<br>
+$$</p>
+<p>积分以内积形式表示, 则方程表现为:
+$$
+\sum^N_{j=1}\left(\nabla\phi_j, \nabla\phi_i\right)u_j = \left(f, \phi_i\right), \quad i=1, \cdots, N
+$$</p>
+<h3 id="构造单元函数">构造单元函数</h3>
+<p>由于 $\phi_i$ 和 $\phi_j$ 都是区域 $\Omega$ 上的分片线性函数, 所以二者的内积 $(\phi_i, \phi_j)$ 需分区域计算, 而不同节点上基函数的非零区域并不相同, 如果按照节点-节点计算内积, 则计算过程十分繁琐.同样的, 在编写程序计算时, 考虑到内存空间占用问题, 以及为方便多线程处理, 需要高效的算法.</p>
+<p>可以考虑, 将空间基函数转换到每个单元上, 从单元基函数的角度, 进行计算.</p>
+<p>基于三角单元的三个顶点, 构造简单的一次Lagrange型函数 $f(x, y)=ax+by+c$, 即有:</p>
+<p>$$
+\varphi_1=\frac{\Delta_{p23}}{\Delta_{123}}=, \quad
+\varphi_2=\frac{\Delta_{1p3}}{\Delta_{123}}, \quad
+\varphi_3=\frac{\Delta_{12p}}{\Delta_{123}}
+$$</p>
+<p>其中</p>
+<p>$$
+2\Delta_{123}=\left|\begin{matrix}1 &amp; x_1 &amp; y_1 \\ 1 &amp; x_2 &amp; y_2 \\ 1 &amp; x_3 &amp; y_3\end{matrix}\right|, \quad
+2\Delta_{p23}=\left|\begin{matrix}1 &amp; x &amp; y \\ 1 &amp; x_2 &amp; y_2 \\ 1 &amp; x_3 &amp; y_3\end{matrix}\right|, \quad
+2\Delta_{1p3}=\left|\begin{matrix}1 &amp; x_1 &amp; y_1 \\ 1 &amp; x &amp; y \\ 1 &amp; x_3 &amp; y_3\end{matrix}\right|, \quad
+2\Delta_{12p}=\left|\begin{matrix}1 &amp; x_1 &amp; y_1 \\ 1 &amp; x_2 &amp; y_2 \\ 1 &amp; x &amp; y\end{matrix}\right|, \quad
+$$</p>
+<p>即表现为三维空间中的三个平面:</p>
+<p><img src="unit_basis_function.png" alt="fig. Unit Basis Function"></p>
+<p><strong>Tips</strong>: 关于三角单元上内积的数值方法, 在 <strong><a href="#%E9%99%84:%E4%B8%89%E8%A7%92%E5%8D%95%E5%85%83%E7%A7%AF%E5%88%86%E8%BF%90%E7%AE%97">附录</a></strong> 中会详细谈到.</p>
+<h2 id="4-建立有限元方程组">4. 建立有限元方程组</h2>
+<h3 id="组装载荷矩阵f">组装载荷矩阵F</h3>
+<p>$F$ 称为<strong>总载荷列阵</strong></p>
+<p>$$
+F =
+\left[
+\begin{matrix}
+(f, \phi_0)\\<br>
+\cdots \\<br>
+(f, \phi_i)\\<br>
+\cdots \\<br>
+(f, \phi_{N-1})\\<br>
+\end{matrix}
+\right]
+$$</p>
+<p>基于每一单元, 计算载荷列阵, 记为 $F_i$, 称为<strong>单元载荷列阵</strong></p>
+<p>$$
+F_i =
+\left[
+\begin{matrix}
+(f, \varphi^i_0) \\<br>
+(f, \varphi^i_1) \\<br>
+(f, \varphi^i_2)
+\end{matrix}
+\right], \quad i=0, \cdots, M-1
+$$</p>
+<p>单元载荷矩阵<strong>组装</strong>总载荷矩阵:</p>
+<pre><code class="language-pseudo">输入: 单元载荷矩阵 Fi, 总载荷矩阵 F, 当前单元节点序号矩阵 Ui
+for i = 0 -&gt; 2 do
+    K[Ui[i]] &lt;- K[Ui[i]] + Fi[i]
+end for
+</code></pre>
+<h3 id="组装刚度矩阵k">组装刚度矩阵K</h3>
+<p>$K$ 称为<strong>总刚度矩阵</strong></p>
+<p>$$
+K =
+\left[
+\begin{matrix}
+(\phi_0, \phi_0) &amp; \cdots &amp; (\phi_i, \phi_0) &amp; \cdots &amp; (\phi_{N-1}, \phi_0) \\<br>
+\vdots           &amp; \ddots &amp; \vdots           &amp; \ddots &amp; \vdots           \\<br>
+(\phi_0, \phi_i) &amp; \cdots &amp; (\phi_i, \phi_i) &amp; \cdots &amp; (\phi_{N-1}, \phi_i) \\<br>
+\vdots           &amp; \ddots &amp; \vdots           &amp; \ddots &amp; \vdots           \\<br>
+(\phi_0, \phi_{N-1}) &amp; \cdots &amp; (\phi_i, \phi_{N-1}) &amp; \cdots &amp; (\phi_{N-1}, \phi_{N-1}) \\<br>
+\end{matrix}
+\right] \\<br>
+$$</p>
+<p>基于每一单元, 计算刚度矩阵, 记为 $K_i$, 称为<strong>单元刚度矩阵</strong></p>
+<p>$$
+K_i =
+\left[
+\begin{matrix}
+(\varphi^i_0, \varphi^i_0) &amp; (\varphi^i_1, \varphi^i_0) &amp; (\varphi^i_2, \varphi^i_0) \\<br>
+(\varphi^i_0, \varphi^i_1) &amp; (\varphi^i_1, \varphi^i_1) &amp; (\varphi^i_2, \varphi^i_1) \\<br>
+(\varphi^i_0, \varphi^i_2) &amp; (\varphi^i_1, \varphi^i_2) &amp; (\varphi^i_2, \varphi^i_2)
+\end{matrix}
+\right], \quad i=0, \cdots, M-1
+$$</p>
+<p>由单元刚度矩阵<strong>组装</strong>总刚度矩阵:</p>
+<pre><code class="language-pseudo">输入: 单元刚度矩阵 Ki, 总刚度矩阵 K, 当前单元节点序号矩阵 Ui
+for i = 0 -&gt; 2 do
+  for j = 0 -&gt; 2 do
+    K[Ui[j]][Ui[i]] &lt;- K[Ui[j]][Ui[i]] + Ki[i][j]
+  end for
+end for
+</code></pre>
+<h3 id="位移列阵u">位移列阵U</h3>
+<p>$U$ 称为<strong>总位移列阵</strong></p>
+<p>$U$ 中的每一个元素 $u_i$ 即为函数 $u_h$ 在 $x_i$ 点处的取值</p>
+<p>$$U=\left[\begin{matrix}u_0 &amp; u_1 &amp; \cdots &amp; u_{N-2} &amp; u_{N-1} \end{matrix}\right]^T$$</p>
+<h3 id="边界条件处理">边界条件处理</h3>
+<h4 id="dirichlet边界条件">Dirichlet边界条件</h4>
+<p>由<strong>Dirichlet边界条件</strong>可知 $u(x)=0, x\in\partial\Omega$, 应用在总刚度矩阵中, 则有</p>
+<pre><code class="language-pseudo">输入: 边界节点布尔矩阵 PBnd, 总刚度矩阵 K, 总载荷矩阵 F
+for i = 0 -&gt; N-1 do
+  if PBnd[i] = 1 then
+    for j = 0 -&gt; N-1 do
+      K[i][j] &lt;- 0
+    end for
+    K[i][i] &lt;- 1
+    F[i] &lt;- 0
+  end if
+end for
+</code></pre>
+<p>应用边界条件后的总刚度矩阵记为 $K_0$, 总载荷矩阵记为 $F_0$.</p>
+<p>与一维情形下的情况不同, 刚度矩阵不是三对角矩阵, 所以不用保持三对角形式.</p>
+<h2 id="5-求解有限元方程组">5. 求解有限元方程组</h2>
+<p>求解线性方程组 $K_0 U=F_0$, 具体方法此处不再详述.</p>
+<pre><code class="language-python">from scipy.linalg import solve
+u_lst = solve(a_mat, f_lst)
+</code></pre>
+<h2 id="6-误差检验">6. 误差检验</h2>
+<p>若已知方程真解 $u(x, y)$, 且计算得到数值解 $u_h(x, y)$, 则可计算误差</p>
+<p>$$
+e(x, y)=u(x, y)-u_h(x, y)
+$$</p>
+<p>定义 $L^2$ 空间上的误差范数</p>
+<p>$$
+E_N^2=||e(x)||^2=\sum^{M-1}<em>{i=0}\iint</em>{K_i}||u(x, y)-u_h(x, y)||^2\mathrm{d}x\mathrm{d}y
+$$</p>
+<p>若计算得</p>
+<p>$$
+\frac{E_N}{E_{2N}}\approx 4
+$$</p>
+<p>则说明数值计算结果是有效的.</p>
+<h2 id="7-计算结果">7. 计算结果</h2>
+<h3 id="计算数值解">计算数值解</h3>
+<p>易知选取的边值问题真解为 $u(x, y)=\sin(\pi x)\sin(\pi y)$</p>
+<h4 id="n2">n=2</h4>
+<p>取 $n=2$, 剖分得到 $N=9$ 个点, $M=8$ 个单元, 计算得到 $E_2=0.3336632375743195$</p>
+<p><img src="myplot0.png" alt="fig. Numerical Solution (n=2)"></p>
+<h4 id="n4">n=4</h4>
+<p>取 $n=4$, 剖分得到 $N=25$ 个点, $M=32$ 个单元, 计算得到 $E_4=0.10742836489850027$</p>
+<p><img src="myplot1.png" alt="fig. Numerical Solution (n=4)"></p>
+<h4 id="n8">n=8</h4>
+<p>取 $n=8$, 剖分得到 $N=81$ 个点, $M=128$ 个单元, 计算得到 $E_8=0.028863378482441915$</p>
+<p><img src="myplot2.png" alt="fig. Numerical Solution (n=8)"></p>
+<h4 id="n16">n=16</h4>
+<p>取 $n=16$, 剖分得到 $N=289$ 个点, $M=512$ 个单元, 计算得到 $E_{16}=0.007355120927260682$</p>
+<p><img src="myplot3.png" alt="fig. Numerical Solution (n=16)"></p>
+<p><strong>Tips</strong>: 具体的计算结果在{% asset_link solution.txt solution.txt %}中展现.</p>
+<h3 id="计算误差阶数">计算误差阶数</h3>
+<p>根据 $L^2$ 误差, 计算误差阶数如下:</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>$L^2$ Error</th>
+<th>$P$ order</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>0.3336632375743195</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>0.10742836489850027</td>
+<td>3.1059137676494366</td>
+</tr>
+<tr>
+<td>8</td>
+<td>0.028863378482441915</td>
+<td>3.7219608565175686</td>
+</tr>
+<tr>
+<td>16</td>
+<td>0.007355120927260682</td>
+<td>3.9242561431538148</td>
+</tr>
+</tbody>
+</table>
+<p>可见 $P=\frac{E_N}{E_{2N}}$ 随着 $n$ 的增大, 逐渐趋近于 4, 所以该数值方法是有效的.</p>
+<p><strong>PS</strong>: 文中只简单的展示了部分核心代码, 具体的实现请转到 <a href="https://github.com/EastMagica/fempy">Github: fempy</a>, 代码实现较为仓促, 如有问题, 欢迎批评指正~</p>
+<h2 id="附三角单元积分运算">附:三角单元积分运算</h2>
+<p>积分是限制有限元计算速度的一大关键因素.</p>
+<p>对于一维单元上的函数 $f(x)$, 计算 $\iint f(x)\mathrm{d}x$, 二维三角单元上的函数 $f(x, y)$, 计算 $\iint f(x, y) \mathrm{d}x\mathrm{d}y$, 一般的数值计算方式会极大的影响迭代速度, 则需要寻找一种高效且高精度的数值方法来近似.</p>
+<p>在二维三角剖分网格上, 由于三角单元的形状不一定完全相同, 在一般的三角单元上进行运算时, 需要定义不同的运算形式.为方便起见, 我们定义<strong>等参单元</strong>的概念, 将一般的三角单元<strong>变换</strong>为等参三角单元, 从而定义统一的运算方式.</p>
+<p>这里引入<strong>面积坐标</strong>的概念, 选取三角单元中任一点 $p=(x, y)$, 连接点 $p$ 与三角单元的三个节点 $p_1=(x_1, y_1), p_2=(x_2, y_2), p_3=(x_3, y_3)$, 则可将三角单元划分为三个部分, 并定义:</p>
+<p>$$
+\lambda_1=\frac{\Delta_{p p_2 p_3}}{\Delta}, \quad \lambda_2=\frac{\Delta_{p_1 p p_3}}{\Delta}, \quad \lambda_3=\frac{\Delta_{p_1 p_2 p}}{\Delta}
+$$</p>
+<p>则 $(\lambda_1, \lambda_2, \lambda_3)$ 为三角单元的面积坐标, 且易知 $\lambda_1+\lambda_2+\lambda_3=1$</p>
+<p><img src="coordinates.png" alt="fig. Coordinates"></p>
+<p>则可定义仿射矩阵 $L$, 将<strong>全局</strong>（global）<strong>坐标系</strong>中的点 $(x, y, 1)$ 映射为<strong>面积坐标系</strong>中的点 $(\lambda_1, \lambda_2, \lambda_3)$, 面积坐标是<strong>局部</strong>（local）<strong>坐标系</strong>的一种.当 $p$ 选取三角单元的三个节点时, 可以得到:</p>
+<p>$$
+\left[\begin{matrix} 1 \\ 0 \\ 0 \end{matrix}\right]=
+L\left[\begin{matrix} x_1 \\ y_1 \\ 1 \end{matrix}\right], \quad
+\left[\begin{matrix} 0 \\ 1 \\ 0 \end{matrix}\right]=
+L\left[\begin{matrix} x_2 \\ y_2 \\ 1 \end{matrix}\right], \quad
+\left[\begin{matrix} 0 \\ 0 \\ 1 \end{matrix}\right]=
+L\left[\begin{matrix} x_3 \\ y_3 \\ 1 \end{matrix}\right]
+$$</p>
+<p>假设</p>
+<p>$$
+L=\left[\begin{matrix} \alpha_1 &amp; \alpha_2 &amp; \alpha_3 \\ \beta_1 &amp; \beta_2 &amp; \beta_3 \\ \gamma_1 &amp; \gamma_2 &amp; \gamma_3 \end{matrix}\right]
+$$</p>
+<p>由于</p>
+<p>$$
+I=\left[\begin{matrix} 1 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{matrix}\right]=L\left[\begin{matrix} x_1 &amp; x_2 &amp; x_3 \\ y_1 &amp; y_2 &amp; y_3 \\ 1 &amp; 1 &amp; 1 \end{matrix}\right]
+$$</p>
+<p>则可知</p>
+<p>$$
+L^{-1}=\left[\begin{matrix} x_1 &amp; x_2 &amp; x_3 \\ y_1 &amp; y_2 &amp; y_3 \\ 1 &amp; 1 &amp; 1 \end{matrix}\right]
+$$</p>
+<p>从而对于三角单元 $K$ 中的任意一点 $p=(x, y)$ 都有:</p>
+<p>$$
+\left[\begin{matrix} \lambda_1 \\ \lambda_2 \\ \lambda_3 \end{matrix}\right]=L\left[\begin{matrix} x \\ y \\ 1 \end{matrix}\right], \quad
+\left[\begin{matrix} x \\ y \\ 1 \end{matrix}\right]=L^{-1}\left[\begin{matrix} \lambda_1 \\ \lambda_2 \\ \lambda_3 \end{matrix}\right]
+$$</p>
+<p>展开为:</p>
+<p>$$
+\begin{cases}
+x &amp;=x_1\lambda_1 + x_2\lambda_2 + x_3\lambda_3 \\<br>
+y &amp;=y_1\lambda_1 + y_2\lambda_2 + y_3\lambda_3 \\<br>
+1 &amp;= \lambda_1 + \lambda_2 + \lambda_3
+\end{cases}
+$$</p>
+<p><img src="area_coordinate.png" alt="area_coordinate"></p>
+<h3 id="方法一直接计算">方法一:直接计算</h3>
+<p>由面积坐标的定义可知 $\varphi_1=\lambda_1, \varphi_2=\lambda_2, \varphi_3=\lambda_3$, 且有</p>
+<p>$$
+\begin{cases}
+\varphi_1 &amp;= \lambda_1 &amp;= \frac{\Delta_{p23}}{\Delta_{123}} &amp;= \frac{x_2 y_3+x_3 y+x y_2-x_2 y-x y_3-x_3 y_2}{\Delta_{123}} \\<br>
+\varphi_2 &amp;= \lambda_1 &amp;= \frac{\Delta_{p23}}{\Delta_{123}} &amp;= \frac{x y_3+x_3 y_1+x_1 y-x y_1-x_1 y_3-x_3 y}{\Delta_{123}} \\<br>
+\varphi_3 &amp;= \lambda_1 &amp;= \frac{\Delta_{p23}}{\Delta_{123}} &amp;= \frac{x_2 y+x y_1+x_1 y_2-x_2 y_1-x_1 y-x y_2}{\Delta_{123}} \\<br>
+\end{cases}
+$$</p>
+<p>则可知 $\nabla \varphi_i$ 都是常数:</p>
+<p>$$
+\nabla \varphi_1 = \left[\begin{matrix} \frac{y_2-y_3}{\Delta_{123}} \\ \frac{x_3-x_2}{\Delta_{123}} \end{matrix}\right], \quad
+\nabla \varphi_2 = \left[\begin{matrix} \frac{y_3-y_1}{\Delta_{123}} \\ \frac{x_1-x_3}{\Delta_{123}} \end{matrix}\right], \quad
+\nabla \varphi_3 = \left[\begin{matrix} \frac{y_1-y_2}{\Delta_{123}} \\ \frac{x_2-x_1}{\Delta_{123}} \end{matrix}\right], \quad
+$$</p>
+<p>则可以直接进行计算.</p>
+<h4 id="单元载荷矩阵">单元载荷矩阵</h4>
+<p>$$
+\begin{align}
+(f, \varphi^K_i) &amp; = \iint_{K}f(x, y)\varphi^K_i(x, y)\mathrm{d}x\mathrm{d}y \\<br>
+&amp; = \iint_{K}f(x(\lambda_1, \lambda_2), y(\lambda_1, \lambda_2))\varphi^K_i(x(\lambda_1, \lambda_2), y(\lambda_1, \lambda_2))\mathrm{d}x\mathrm{d}y \\<br>
+&amp; = \iint_{\hat{K}}f((x_0-x_2)\lambda_1+(x_1-x_2)\lambda_2+x_2, (y_0-y_2)\lambda_1+(y_1-y_2)\lambda_2+y_2)\lambda_i\mathrm{d}x\mathrm{d}y \\<br>
+&amp; = \int_1^{1-x}\int_0^1f((x_0-x_2)\lambda_1+(x_1-x_2)\lambda_2+x_2, (y_0-y_2)\lambda_1+(y_1-y_2)\lambda_2+y_2)\lambda_i\mathrm{d}\lambda_1\mathrm{d}\lambda_2
+\end{align}
+$$</p>
+<pre><code class="language-python">from scipy.integrate import quad, dblquad
+f_lst = np.zeros(3)
+fun = lambda x, y: f(p[2, 0] + x * (p[0, 0] - p[2, 0]) + y * (p[1, 0] - p[2, 0]),
+                     p[2, 1] + x * (p[0, 1] - p[2, 1]) + y * (p[1, 1] - p[2, 1]))
+f_lst[0] = dblquad(lambda x, y: fun(x, y) * x * det_j, 0, 1, lambda x: 0, lambda x: 1 - x)
+f_lst[1] = dblquad(lambda x, y: fun(x, y) * y * det_j, 0, 1, lambda x: 0, lambda x: 1 - x)
+f_lst[2] = dblquad(lambda x, y: fun(x, y) * (1 - x - y) * det_j, 0, 1, lambda x: 0, lambda x: 1 - x)
+</code></pre>
+<h4 id="单元刚度矩阵">单元刚度矩阵</h4>
+<p>$$
+(\nabla\varphi^K_i, \nabla\varphi^K_j)=\frac{\frac{\partial\varphi^K_i}{\partial x}\frac{\partial\varphi^K_j}{\partial x}+\frac{\partial\varphi^K_i}{\partial y}\frac{\partial\varphi^K_j}{\partial y}}{2\Delta_K}
+$$</p>
+<pre><code class="language-python">a_lst = np.zeros(9)
+sa = (p[0, 0] - p[2, 0]) * (p[1, 1] - p[2, 1]) - (p[1, 0] - p[2, 0]) * (p[0, 1] - p[2, 1])
+a_lst[0] = ((p[1, 1] - p[2, 1]) ** 2 + (p[2, 0] - p[1, 0]) ** 2) / sa
+a_lst[1] = ((p[2, 1] - p[0, 1]) * (p[1, 1] - p[2, 1]) +
+            (p[0, 0] - p[2, 0]) * (p[2, 0] - p[1, 0])) / sa
+a_lst[2] = ((p[0, 1] - p[1, 1]) * (p[1, 1] - p[2, 1]) +
+            (p[1, 0] - p[0, 0]) * (p[2, 0] - p[1, 0])) / sa
+a_lst[3] = a_lst[1]
+a_lst[4] = ((p[2, 1] - p[0, 1]) ** 2 + (p[0, 0] - p[2, 0]) ** 2) / sa
+a_lst[5] = ((p[0, 1] - p[1, 1]) * (p[2, 1] - p[0, 1]) +
+            (p[1, 0] - p[0, 0]) * (p[0, 0] - p[2, 0])) / sa
+a_lst[6] = a_lst[2]
+a_lst[7] = a_lst[5]
+a_lst[8] = ((p[0, 1] - p[1, 1]) ** 2 + (p[1, 0] - p[0, 0]) ** 2) / sa
+</code></pre>
+<h3 id="方法二gauss积分">方法二:Gauss积分</h3>
+<p>根据Gauss求积公式, 选择不同的<strong>Gauss求积点</strong> $\epsilon_i$, 近似计算单元区域上的积分:</p>
+<p><img src="gauss_points.png" alt="fig. some Gauss Point"></p>
+<p>$$
+\int_{K} f=\sum^n_{i=1} f(\xi_i, \eta_i)W_i, \quad
+$$</p>
+<p>将定义在局部坐标系中的Gauss求积点 $(\lambda_1, \lambda_2)$, 通过仿射变换, 从自然坐标系变换到局部坐标系中:</p>
+<p>$$
+\left[\begin{matrix}\xi &amp; \eta \end{matrix}\right] =
+\left[\begin{matrix}
+\lambda_1 &amp; \lambda_2 &amp; 1-\lambda_1-\lambda_2
+\end{matrix}\right]
+\left[\begin{matrix}
+x_1 &amp; y_1 \\<br>
+x_2 &amp; y_2 \\<br>
+x_3 &amp; y_3 \\<br>
+\end{matrix}\right]
+$$</p>
+<p>坐标变换的Jacobi矩阵为:</p>
+<h1 id="right">$$
+J_K=
+\left|
+\begin{matrix}
+\frac{\partial x}{\partial \lambda_1} &amp; \frac{\partial y}{\partial \lambda_1} \\<br>
+\frac{\partial x}{\partial \lambda_2} &amp; \frac{\partial y}{\partial \lambda_2} \\<br>
+\end{matrix}
+\right|</h1>
+<p>\left|
+\begin{matrix}
+x_1 - x_3 &amp; y_1 - y_3 \\<br>
+x_2 - x_3 &amp; y_2 - y_3 \\<br>
+\end{matrix}
+\right|
+$$</p>
+<p>则三角单元上的Gauss求积公式为:</p>
+<p>$$
+\iint_{K}f(x, y)\mathrm{d}x\mathrm{d}y=\sum^m_{i=1} f(\xi_i, \eta_i)|J_K|W_i
+$$</p>
+<p>三角等参单元上的{% asset_link gauss.zip Gauss点及Gauss权重数据 %}, 已经打包为 <code>.npy</code> 格式, 由numpy库可直接读取.</p>
+<p><strong>Tips</strong>: 具体的Gauss积分形式, 参考 <a href="https://github.com/EastMagica/fempy/blob/master/fempy/fem2d/basic.py">basic.py</a> 和 <a href="https://github.com/EastMagica/fempy/blob/master/fempy/fem2d/fem_2d.py">fem_2d.py</a>, 实现方式较为简单.</p>
 ]]></content></item><item><title>有限元方法入门（1）：一维算例</title><link>https://blog.eastmagica.com/posts/2019/fem-1/</link><pubDate>Wed, 31 Jul 2019 18:52:10 +0800</pubDate><guid>https://blog.eastmagica.com/posts/2019/fem-1/</guid><description>有限元方法多用于二维、三维的区域上，相比于有限差分方法，对非规则网格的适应性较好。而在一维区域上，有限元方法与有限差分方法相比，没有太大的优</description><content type="html"><![CDATA[<p>有限元方法多用于二维、三维的区域上，相比于有限差分方法，对非规则网格的适应性较好。而在一维区域上，有限元方法与有限差分方法相比，没有太大的优势。但从一维的例子讲起，有助于由浅及深的了解有限元的思想。</p>
 <p>有限元方法多用于椭圆方程的求解，考虑最为常见的椭圆型方程——Poisson方程，如下：</p>
 <p>$$
