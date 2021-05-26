@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>fractional caculus on 东方小道</title><link>https://blog.eastmagica.com/tags/fractional-caculus/</link><description>Recent content in fractional caculus on 东方小道</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Mon, 24 May 2021 12:24:39 +0800</lastBuildDate><atom:link href="https://blog.eastmagica.com/tags/fractional-caculus/index.xml" rel="self" type="application/rss+xml"/><item><title>FDE: An Algorithm for Single-Term Equations</title><link>https://blog.eastmagica.com/posts/2021/fde_num-1/</link><pubDate>Mon, 24 May 2021 12:24:39 +0800</pubDate><guid>https://blog.eastmagica.com/posts/2021/fde_num-1/</guid><description>Introduction The method can be called indirect
+$$ D_{*0}^{n} y(x) = f(x, y(x)) $$
+with appropriate initial conditions
+$$ D^{k} y(0) = y_0^{(k)}, \quad k=0,1,\cdots,\lceil n\rceil - 1 $$
+applicated Lemma 6.2, in order to convert the initial value problem for the differential equation into an equivalent Volterra integral equation,
+$$ y(x) = \sum_{k=0}^{m-1} \frac{x^k}{k!} D^k y(0) + \frac{1}{\Gamma(n)} \int_0^x (x-t)^{n-1} f(t, y(t)) \mathrm{d} t $$
+where $m=\lceil n\rceil$.
+The algorithm that we shall consider can be interpreted as a frational variant of the classical second-order Adams–Bashforth–Moulton method.</description></item></channel></rss>

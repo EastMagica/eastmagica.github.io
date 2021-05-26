@@ -1,4 +1,332 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>东方小道</title><link>https://blog.eastmagica.com/atom.xml</link><description>东方小道</description><generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en</language><lastBuildDate>Fri, 09 Aug 2019 18:01:35 +0800</lastBuildDate><item><title>About</title><link>https://blog.eastmagica.com/about/</link><pubDate>Sat, 05 Sep 2020 11:30:55 +0800</pubDate><guid>https://blog.eastmagica.com/about/</guid><description>人生到处知何似，应似飞鸿踏雪泥 About me 计算数学研究生在读，喜欢数学，喜欢代码，业余也会玩一玩摄影。</description><content type="html"><![CDATA[<blockquote>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>东方小道</title><link>https://blog.eastmagica.com/atom.xml</link><description>东方小道</description><generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en</language><lastBuildDate>Mon, 24 May 2021 12:24:39 +0800</lastBuildDate><item><title>FDE: An Algorithm for Single-Term Equations</title><link>https://blog.eastmagica.com/posts/2021/fde_num-1/</link><pubDate>Mon, 24 May 2021 12:24:39 +0800</pubDate><guid>https://blog.eastmagica.com/posts/2021/fde_num-1/</guid><description>Introduction The method can be called indirect
+$$ D_{*0}^{n} y(x) = f(x, y(x)) $$
+with appropriate initial conditions
+$$ D^{k} y(0) = y_0^{(k)}, \quad k=0,1,\cdots,\lceil n\rceil - 1 $$
+applicated Lemma 6.2, in order to convert the initial value problem for the differential equation into an equivalent Volterra integral equation,
+$$ y(x) = \sum_{k=0}^{m-1} \frac{x^k}{k!} D^k y(0) + \frac{1}{\Gamma(n)} \int_0^x (x-t)^{n-1} f(t, y(t)) \mathrm{d} t $$
+where $m=\lceil n\rceil$.
+The algorithm that we shall consider can be interpreted as a frational variant of the classical second-order Adams–Bashforth–Moulton method.</description><content type="html"><![CDATA[<h2 id="introduction">Introduction</h2>
+<p>The method can be called <em>indirect</em></p>
+<p>$$
+D_{*0}^{n} y(x) = f(x, y(x))
+$$</p>
+<p>with appropriate initial conditions</p>
+<p>$$
+D^{k} y(0) = y_0^{(k)}, \quad k=0,1,\cdots,\lceil n\rceil - 1
+$$</p>
+<p>applicated <strong>Lemma 6.2</strong>, in order to convert the initial value problem for the differential equation into an equivalent <strong>Volterra integral equation</strong>,</p>
+<p>$$
+y(x) = \sum_{k=0}^{m-1} \frac{x^k}{k!} D^k y(0) + \frac{1}{\Gamma(n)} \int_0^x (x-t)^{n-1} f(t, y(t)) \mathrm{d} t
+$$</p>
+<p>where $m=\lceil n\rceil$.</p>
+<p>The algorithm that we shall consider can be interpreted as a frational variant of the classical second-order <strong>Adams–Bashforth–Moulton method</strong>.</p>
+<h3 id="integral-scheme">Integral Scheme</h3>
+<p>We focus our attention on the well-known initial-value problem for the first-order differnetial equation</p>
+<p>$$\begin{cases}
+D y(x) &amp;= f(x, y(x)) \<br>
+y(0) &amp;= y_0
+\end{cases}$$</p>
+<p>We suggest to use the predictor-corrector technique of Adams, for the sake of simplicity, we assume that we are working on a uniform grid ${t_j=jh: j=0,1,\cdots,N}$ with some interger $N$ and $h=T/N$.</p>
+<p>$$
+y_{k+1} = y_k + \int_{x_k}^{x_{k+1}} f(t, y(t)) \mathrm{d} t =  y_k + \frac{t_{k+1}-t_k}{2} \bigg(f(t_k, y(t_k)) + f(t_{k+1}, y(t_{k+1})\bigg)
+$$</p>
+<p>explicit (forward Euler or one-step Adams–Bashforth) method</p>
+<p>$$
+y_{k+1}^{P} = y_{k} + h f(t_k, y_k)
+$$</p>
+<p>and the process into</p>
+<p>$$
+y_{k+1} = y_k + \frac{h}{2} \left(f(t_k, y_k) + f(t_{k+1}, y^P_{k+1})\right)
+$$</p>
+<h3 id="fractional-scheme">Fractional Scheme</h3>
+<p>Fractional Formulation</p>
+<p>$$\tag{2}
+y(t_{k+1}) = \sum_{j=0}^{m-1} \frac{x^j}{j!} y^{(j)}_0 + \frac{1}{\Gamma(n)} \int_0^{t_{k+1}} (t_{k+1}-z)^{n-1} f(z, y(z)) \mathrm{d} z
+$$</p>
+<p>We apply the approximation</p>
+<p>$$
+\begin{aligned}
+&amp; \int_0^{t_{k+1}} (t_{k+1} - z)^{n-1} g(z) \mathrm{d} z \<br>
+\approx &amp; \int_0^{t_{k+1}} (t_{k+1} - z)^{n-1} \tilde{g}_{k+1}(z) \mathrm{d} z \<br>
+=&amp; \int_0^{t_{k+1}} \left[(t_{k+1} - z)^{n-1} \left(\sum_{j=0}^{k+1} g(t_{j})\phi_{j, k+1}(z)\right)\right] \mathrm{d} z \<br>
+=&amp; \sum_{j=0}^{k+1} g(t_{j}) \int_0^{t_{k+1}} (t_{k+1} - z)^{n-1} \phi_{j, k+1}(z) \mathrm{d} z \<br>
+=&amp; \sum_{j=0}^{k+1} a_{j, k+1} g(t_{j}) \<br>
+\end{aligned}
+$$</p>
+<p>where $\tilde{g}$ is the piecewise linear interpolant for $g$ with nodes and knots chosen at the $t_j,; j=0,1,2,\cdots,k+1$ as</p>
+<p>$$
+\tilde{g}<em>{k+1}(z) = \sum</em>{j=0}^{k+1} g(t_{j})\phi_{j, k+1}(z)
+$$</p>
+<p>where $phi_{j}(z)$ is linear basis function, defined by</p>
+<p>$$
+\phi_{j, k+1}(z)=\begin{cases}
+(z - t_{j-1}) / (t_j - t_{j-1}) &amp; \text{ if } t_{j-1} &lt; z \leq t_{j} \<br>
+(t_{j+1} - z) / (t_{j+1} - t_j) &amp; \text{ if } t_{j} &lt; z \leq t_{j+1} \<br>
+0 &amp; \text{ else }
+\end{cases}
+$$</p>
+<p>visualized, shown as</p>
+<p><img src="img/single_term/basis_fun_all.png" alt="Fig. Basis phi"></p>
+<p>then the itegration within coffecient $a_{j, k+1}$ can be simplified as</p>
+<p>$$
+\begin{aligned}
+a_{j, k+1} =&amp; \int_0^{t_{k+1}} (t_{k+1} - z)^{n-1} \phi_{j, k+1}(z) \mathrm{d} z \<br>
+=&amp; \begin{cases}
+\frac{h^n}{n(n+1)} \left(k^{n+1}-(k-n)(k+1)^{n}\right) &amp; \text{ if } j=0, \<br>
+\frac{h^n}{n(n+1)} \left((k-j+2)^{n+1}+(k-j)^{n+1}-2(k-j+1)^{n+1}\right) &amp; \text{ if } 1\leq j\leq k, \<br>
+\frac{h^n}{n(n+1)} &amp; \text{ if } j=k+1 \<br>
+\end{cases}
+\end{aligned}
+$$</p>
+<p>thus giving an equation for the unknown approximation $y_{k+1}$</p>
+<p>$$\tag{3}
+y_{k+1} = \sum_{j=0}^{m-1} \frac{t_{k+1}^{j}}{j!} y_0^{(j)} + \frac{1}{\Gamma(n)} \left(\sum_{j=0}^{k+1} a_{j, k+1} f(t_j, y(t_j))\right)
+$$</p>
+<p>where again we have to replace $y(t_{j})$ and by their approximation $y_j$ in (3), respectively. This yields the equation for the implicit one-step *Adams-Moulton method*, which is</p>
+<p>$$\tag{4}
+y_{k+1} = \sum_{j=0}^{m-1} \frac{t_{k+1}^{j}}{j!} y_0^{(j)} + \frac{1}{\Gamma(n)} \left(\sum_{j=0}^{k+1} a_{j, k+1} f(t_j, y_j)\right)
+$$</p>
+<p>The problem know is this equation is require the value of $y_{k+1}$ which is unknown, and due to the nonlinear nature of the function $f$, we cannot solve for $y_{k+1}$ directly in general. Therefore, we may use (1) in an iterative process, inserting a preliminary approximation for $y_{k+1}$ in the right-hand side in order to determine a better approximation that we can used.</p>
+<p>The preliminary approximation $y_{k+1}^{P}$, the so-called predictor, is obtained in a very similar way, only replacing the xxxxxxx formula by the rectangle rule</p>
+<p>$$
+\begin{aligned}
+&amp; \int_{0}^{t_{k+1}} (t_{k+1} - z)^{n-1} g(z) \mathrm{d} z \<br>
+\approx &amp; \int_{0}^{t_{k+1}} (t_{k+1} - z)^{n-1} \sum_{j=0}^{k} g(t_j) \mathrm{1}(z) \mathrm{d} z \<br>
+=&amp; \sum_{j=0}^{k} g(t_j) \int_{0}^{t_{k+1}} (t_{k+1} - z)^{n-1} \mathrm{d} z \<br>
+=&amp; \sum_{j=0}^{k} g(t_j) \frac{(t_{k+1} - t_{j}^n - (t_{k+1} - t_{j+1})^n}{n} \<br>
+=&amp; \sum_{j=0}^{k} b_{j, k+1} g(t_j) \<br>
+\end{aligned}
+$$</p>
+<p>the rectanle rule shown as</p>
+<p><img src="img/single_term/rectangle_rule.png" alt="rectangle rule"></p>
+<p>in equispaced case, we have the simpler expression $b_{j,k+1}=\frac{h^n}{n}((k+1-j)^n-(k-j)^n)$.</p>
+<p>Thus giving us the explicit predict method</p>
+<p>$$\tag{5}
+y_{k+1}^{P} = \sum_{j=0}^{m-1} \frac{t_{k+1}^{j}}{j!} y_0^{(j)} + \frac{1}{\Gamma(n)} \sum_{j=0}^{k} b_{j, k+1} f(t_{j}, y_{j})
+$$</p>
+<p>This then gives us our corrector formula (i.e. the fractional variant of the one-step <em>Adams-Moulton method</em>), which is</p>
+<p>$$\tag{6}
+\begin{aligned}
+y_{k+1} =&amp; \sum_{j=0}^{m-1} \frac{t_{k+1}^{j}}{j!} y_0^{(j)} + \frac{1}{\Gamma(n)} \left(\sum_{j=0}^{k} a_{j, k+1} f(t_j, y(t_j)) + a_{k+1, k+1} f(t_{k+1}, y(t_{k+1}))\right) \<br>
+=&amp; \sum_{j=0}^{m-1} \frac{t_{k+1}^{j}}{j!} y_0^{(j)} + \frac{1}{\Gamma(n)} \left(\sum_{j=0}^{k} a_{j, k+1} f(t_j, y_j) + a_{k+1, k+1} f(t_{k+1}, y_{k+1}^{P})\right) \<br>
+\end{aligned}
+$$</p>
+<h2 id="examples">Examples</h2>
+<h3 id="ex1-two-functions-coincide-at-x_1-but-nowhere-else">ex.1 two functions coincide at $x_1$ but nowhere else</h3>
+<p><strong>Theorem 6.A.</strong> Let $f: [a, b]\times [c, d]\rightarrow\mathbb{R}$ be continuous and satisfy a Lipschitz condition with respect to the second variable. Consider two solutions $y_1$ and $y_2$ of the differential equation</p>
+<p>$$
+D^{1} y_{j} = f(x, y_j(x))\quad j=1,2
+$$</p>
+<p>subject to the initial conditions $y_j(x_j)=y_{j0}$, respectively. Then the functions $y_1$ and $y_2$ coincide either everywhere or nowhere.</p>
+<p><strong>Example 6.1</strong> Let $0 &lt; n &lt; 1$ and consider the fractional differential equations</p>
+<p>$$
+D_{*0}^{n} y(x) = \Gamma(n+1)
+$$</p>
+<p>with initial conditions $y_1(0)=0,; y_2(1)=1$</p>
+<h4 id="numerical">Numerical</h4>
+<p>Let $n = 1 / 4$</p>
+<pre><code class="language-python">test_11 = Adams(
+    func=lambda t, y: gamma(n + 1),
+    dy0=[np.array([0.])],
+    dn=n,
+    time_opt={
+        &quot;domain&quot;: np.array([0., 2.]),
+        &quot;n&quot;: 200
+    }
+)
+y_data_11 = test_11.iterator()
+
+test_12 = Adams(
+    func=lambda t, y: gamma(n + 1),
+    dy0=[np.array([1.])],
+    dn=n,
+    time_opt={
+        &quot;domain&quot;: np.array([1., 2.]),
+        &quot;n&quot;: 200
+    }
+)
+y_data_12 = test_12.iterator()
+</code></pre>
+<p><img src="ex.1.num.png" alt="Figure 1.1 Numerial Solution"></p>
+<h4 id="analytical">Analytical</h4>
+<pre><code class="language-python">t_seq_11 = test_11.t.seq
+t_seq_12 = test_12.t.seq
+
+y_analytic_11 = t_seq_11**n
+y_analytic_12 = 1 + (t_seq_12 - 1.)**n
+</code></pre>
+<p><img src="ex.1.ana.png" alt="Figure 1.2 Analytical Solution"></p>
+<h4 id="error-analysis">Error Analysis</h4>
+<pre><code class="language-python">y_error_11 = y_data_11 - y_analytic_11
+y_error_12 = y_data_12 - y_analytic_12
+</code></pre>
+<p><img src="img/single_term/ex.1.err.png" alt="Figure 1.3 Error"></p>
+<h3 id="ex2-different-initial-into-different-result">ex.2 different initial into different result</h3>
+<p><strong>Theorem 6.12.</strong> Let $0&lt;n&lt;1$ and assume $f: [0, b]\times [c, d]\rightarrow \mathbb{R}$ to be continuous and satisfy a Lipschitz condition with respect to the second variable. Consider two solutions $y_1$ and $y_2$ of the differential equation</p>
+<p>$$
+D_{*0}^{n} y_j(x) = f(x, y_j(x))\quad j=1,2
+$$</p>
+<p>subject to the initial conditions $y_j(x)=y_{j0}$, respectively, where $y_{10}\neq y_{20}$. Then, for all $x$ where both $y_1(x)$ and $y_2(x)$ exist, wehave $y_1(x)\neq y_2(x)$.</p>
+<p><strong>Example 6.2</strong> We verify the statement of Theorem 6.12 by looking at the differential equation</p>
+<p>$$
+D_{*0}^{0.28} y(x)=(0.5-x) \sin y(x) +0.8x^3
+$$</p>
+<p>with initial conditions</p>
+<p>$$
+y_0(0)=1.7, y_1(0)=1.6, y_2(0)=1.5, y_3(0)=1.4, y_4(0)=1.3, y_5(0)=1.2
+$$</p>
+<h4 id="numerical-1">Numerical</h4>
+<pre><code class="language-python">test_2 = Adams(
+    func=lambda t, y: (0.5 - t) * np.sin(y) + 0.8 * t**3,
+    dy0=[np.array([1.7, 1.6, 1.5, 1.4, 1.3, 1.2])],
+    dn=0.28,
+    time_opt={
+        &quot;domain&quot;: np.array([0., 1.]),
+        &quot;n&quot;: 200
+    }
+)
+y_data_2 = test_2.iterator()
+</code></pre>
+<p><img src="ex.2.num.png" alt="Figure 2.1 Numerial Solution"></p>
+<h3 id="ex3">ex.3</h3>
+<p><strong>Example 6.3</strong></p>
+<p>$$
+D_{*0}^{1/2} y(x)=\sin y(x), \quad y(1)=2.5
+$$</p>
+<p>with initial conditions</p>
+<p>$$
+y_1(0)=1., y_2(0)=2., y_3(0)=1.5, y_4(0)=1.75, y_5(0)=1.625, y_6(0)=1.6875, y_7(0)=1.71875
+$$</p>
+<h4 id="numerical-2">Numerical</h4>
+<pre><code class="language-python">test_3 = Adams(
+    func=lambda t, y: np.sin(y),
+    dy0=[np.array([1., 2., 1.5, 1.75, 1.625, 1.6875, 1.71875])],
+    dn=0.5,
+    time_opt={
+        &quot;domain&quot;: np.array([0., 1.]),
+        &quot;n&quot;: 200
+    }
+)
+y_data_3 = test_3.iterator()
+</code></pre>
+<p><img src="ex.3.num.png" alt="Figure 3.1 Numerial Solution"></p>
+<h3 id="ex4">ex.4</h3>
+<p><strong>Example C.1</strong></p>
+<p>$$
+D_{*0}^n y(x) = \frac{40320}{\Gamma(9-n)} x^{8-n} - 3\frac{\Gamma(5+n/2)}{\Gamma(5+n/2)} x^{4-n/2} + \frac{9}{4}\Gamma(n+1) + \left(\frac{3}{2} x^{n/2} - x^4\right) - [y(x)]^{3/2},\quad x\in [0, 1], n &gt; 1
+$$</p>
+<p>with initial condition $y(0)=0, y'(0)=0$.</p>
+<p>The exact solution of this initial value problem is</p>
+<p>$$
+y(x) = x^8 - 3 x^{4+n/2} + \frac{9}{4} x^n
+$$</p>
+<p>hence</p>
+<p>$$
+D_{*0}^n y(x) = \frac{40320}{\Gamma(9-n)} x^{8-n} - 3\frac{\Gamma(5+n/2)}{\Gamma(5+n/2)} x^{4-n/2} + \frac{9}{4}\Gamma(n+1)
+$$</p>
+<h4 id="numerical-3">Numerical</h4>
+<p>Let $n = 1.25$</p>
+<pre><code class="language-python">def fun_4(t, y):
+    expr1 = 40320/gamma(9-n) * t**(8-n)
+    expr2 = 3 * gamma(5+n/2) / gamma(5-n/2) * t**(4-n/2)
+    expr3 = 9/4 * gamma(n + 1)
+    expr4 = (3/2 * t**(n/2) - t**4)**3
+    expr5 = y**(3/2)
+    return expr1 - expr2 + expr3 + expr4 - expr5
+</code></pre>
+<pre><code class="language-python">test_4 = Adams(
+    func=fun_4,
+    dy0=[np.array([0]), np.array([0])],
+    dn=n,
+    time_opt={
+        &quot;domain&quot;: np.array([0., 1.]),
+        &quot;n&quot;: 200
+    }
+)
+y_data_4 = test_4.iterator()
+</code></pre>
+<p><img src="ex.4.num.png" alt="Figure 4.1 Numerial Solution"></p>
+<h4 id="analytical-1">Analytical</h4>
+<pre><code class="language-python">t_seq_4 = test_4.t.seq
+# t_seq_4 = np.linspace(0, 1., 201)
+
+y_analytic_4 = t_seq_4**8 - 3 * t_seq_4**(4+n/2) + 9/4 * t_seq_4**n
+</code></pre>
+<p><img src="ex.4.ana.png" alt="Figure 4.2 Analytical Solution"></p>
+<h4 id="error-analysis-1">Error Analysis</h4>
+<pre><code class="language-python">y_error_4 = y_data_4 - y_analytic_4
+</code></pre>
+<p><img src="ex.4.err.png" alt="Figure 4.3 Error"></p>
+<h4 id="error-order">Error Order</h4>
+<pre><code class="language-python">iter_step = 7
+step_n = 10
+
+y_4_end_list = iter_error_order(
+    module=Adams,
+    parameters={
+        &quot;func&quot;: fun_4,
+        &quot;dy0&quot;: [np.array([0]), np.array([0])],
+        &quot;dn&quot;: n,
+        &quot;time_opt&quot;: {
+            &quot;domain&quot;: np.array([0., 1.]),
+            &quot;n&quot;: step_n
+        }
+    },
+    iter_name=&quot;time_opt&quot;,
+    iter_step=iter_step,
+    iter_func=lambda opt: dict(opt, n=opt[&quot;n&quot;] * 2),
+    collect_func=lambda opt, out: [opt[&quot;n&quot;], out[-1] - y_analytic_4[-1]]
+)
+order_info_table, order_info = error_table(y_4_end_list)
+print(order_info_table.get_string())
+</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">step size</th>
+<th style="text-align:center">Error of Adams scheme</th>
+<th style="text-align:center">Error Order</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">10</td>
+<td style="text-align:center">5.532564e-03</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">20</td>
+<td style="text-align:center">1.593218e-03</td>
+<td style="text-align:center">1.7960</td>
+</tr>
+<tr>
+<td style="text-align:center">40</td>
+<td style="text-align:center">4.328280e-04</td>
+<td style="text-align:center">1.8801</td>
+</tr>
+<tr>
+<td style="text-align:center">80</td>
+<td style="text-align:center">1.143382e-04</td>
+<td style="text-align:center">1.9205</td>
+</tr>
+<tr>
+<td style="text-align:center">160</td>
+<td style="text-align:center">2.974073e-05</td>
+<td style="text-align:center">1.9428</td>
+</tr>
+<tr>
+<td style="text-align:center">320</td>
+<td style="text-align:center">7.663078e-06</td>
+<td style="text-align:center">1.9564</td>
+</tr>
+<tr>
+<td style="text-align:center">640</td>
+<td style="text-align:center">1.961993e-06</td>
+<td style="text-align:center">1.9656</td>
+</tr>
+</tbody>
+</table>
+]]></content></item><item><title>About</title><link>https://blog.eastmagica.com/about/</link><pubDate>Sat, 05 Sep 2020 11:30:55 +0800</pubDate><guid>https://blog.eastmagica.com/about/</guid><description>人生到处知何似，应似飞鸿踏雪泥 About me 计算数学研究生在读，喜欢数学，喜欢代码，业余也会玩一玩摄影。</description><content type="html"><![CDATA[<blockquote>
 <p>人生到处知何似，应似飞鸿踏雪泥</p>
 </blockquote>
 <h2 id="about-me">About me</h2>
