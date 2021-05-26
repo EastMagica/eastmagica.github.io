@@ -23,7 +23,7 @@ $$</p>
 <h3 id="integral-scheme">Integral Scheme</h3>
 <p>We focus our attention on the well-known initial-value problem for the first-order differnetial equation</p>
 <p>$$\begin{cases}
-D y(x) &amp;= f(x, y(x)) \<br>
+D y(x) &amp;= f(x, y(x)) \\<br>
 y(0) &amp;= y_0
 \end{cases}$$</p>
 <p>We suggest to use the predictor-corrector technique of Adams, for the sake of simplicity, we assume that we are working on a uniform grid ${t_j=jh: j=0,1,\cdots,N}$ with some interger $N$ and $h=T/N$.</p>
@@ -46,11 +46,11 @@ $$</p>
 <p>We apply the approximation</p>
 <p>$$
 \begin{aligned}
-&amp; \int_0^{t_{k+1}} (t_{k+1} - z)^{n-1} g(z) \mathrm{d} z \<br>
-\approx &amp; \int_0^{t_{k+1}} (t_{k+1} - z)^{n-1} \tilde{g}_{k+1}(z) \mathrm{d} z \<br>
-=&amp; \int_0^{t_{k+1}} \left[(t_{k+1} - z)^{n-1} \left(\sum_{j=0}^{k+1} g(t_{j})\phi_{j, k+1}(z)\right)\right] \mathrm{d} z \<br>
-=&amp; \sum_{j=0}^{k+1} g(t_{j}) \int_0^{t_{k+1}} (t_{k+1} - z)^{n-1} \phi_{j, k+1}(z) \mathrm{d} z \<br>
-=&amp; \sum_{j=0}^{k+1} a_{j, k+1} g(t_{j}) \<br>
+&amp; \int_0^{t_{k+1}} (t_{k+1} - z)^{n-1} g(z) \mathrm{d} z \\<br>
+\approx &amp; \int_0^{t_{k+1}} (t_{k+1} - z)^{n-1} \tilde{g}_{k+1}(z) \mathrm{d} z \\<br>
+=&amp; \int_0^{t_{k+1}} \left[(t_{k+1} - z)^{n-1} \left(\sum_{j=0}^{k+1} g(t_{j})\phi_{j, k+1}(z)\right)\right] \mathrm{d} z \\<br>
+=&amp; \sum_{j=0}^{k+1} g(t_{j}) \int_0^{t_{k+1}} (t_{k+1} - z)^{n-1} \phi_{j, k+1}(z) \mathrm{d} z \\<br>
+=&amp; \sum_{j=0}^{k+1} a_{j, k+1} g(t_{j}) \\<br>
 \end{aligned}
 $$</p>
 <p>where $\tilde{g}$ is the piecewise linear interpolant for $g$ with nodes and knots chosen at the $t_j,; j=0,1,2,\cdots,k+1$ as</p>
@@ -60,21 +60,21 @@ $$</p>
 <p>where $phi_{j}(z)$ is linear basis function, defined by</p>
 <p>$$
 \phi_{j, k+1}(z)=\begin{cases}
-(z - t_{j-1}) / (t_j - t_{j-1}) &amp; \text{ if } t_{j-1} &lt; z \leq t_{j} \<br>
-(t_{j+1} - z) / (t_{j+1} - t_j) &amp; \text{ if } t_{j} &lt; z \leq t_{j+1} \<br>
+(z - t_{j-1}) / (t_j - t_{j-1}) &amp; \text{ if } t_{j-1} &lt; z \leq t_{j} \\<br>
+(t_{j+1} - z) / (t_{j+1} - t_j) &amp; \text{ if } t_{j} &lt; z \leq t_{j+1} \\<br>
 0 &amp; \text{ else }
 \end{cases}
 $$</p>
 <p>visualized, shown as</p>
-<p><img src="img/single_term/basis_fun_all.png" alt="Fig. Basis phi"></p>
+<p><img src="basis_fun_all.png" alt="Fig. Basis phi"></p>
 <p>then the itegration within coffecient $a_{j, k+1}$ can be simplified as</p>
 <p>$$
 \begin{aligned}
-a_{j, k+1} =&amp; \int_0^{t_{k+1}} (t_{k+1} - z)^{n-1} \phi_{j, k+1}(z) \mathrm{d} z \<br>
+a_{j, k+1} =&amp; \int_0^{t_{k+1}} (t_{k+1} - z)^{n-1} \phi_{j, k+1}(z) \mathrm{d} z \\<br>
 =&amp; \begin{cases}
-\frac{h^n}{n(n+1)} \left(k^{n+1}-(k-n)(k+1)^{n}\right) &amp; \text{ if } j=0, \<br>
-\frac{h^n}{n(n+1)} \left((k-j+2)^{n+1}+(k-j)^{n+1}-2(k-j+1)^{n+1}\right) &amp; \text{ if } 1\leq j\leq k, \<br>
-\frac{h^n}{n(n+1)} &amp; \text{ if } j=k+1 \<br>
+\frac{h^n}{n(n+1)} \left(k^{n+1}-(k-n)(k+1)^{n}\right) &amp; \text{ if } j=0, \\<br>
+\frac{h^n}{n(n+1)} \left((k-j+2)^{n+1}+(k-j)^{n+1}-2(k-j+1)^{n+1}\right) &amp; \text{ if } 1\leq j\leq k, \\<br>
+\frac{h^n}{n(n+1)} &amp; \text{ if } j=k+1 \\<br>
 \end{cases}
 \end{aligned}
 $$</p>
@@ -84,21 +84,23 @@ y_{k+1} = \sum_{j=0}^{m-1} \frac{t_{k+1}^{j}}{j!} y_0^{(j)} + \frac{1}{\Gamma(n)
 $$</p>
 <p>where again we have to replace $y(t_{j})$ and by their approximation $y_j$ in (3), respectively. This yields the equation for the implicit one-step *Adams-Moulton method*, which is</p>
 <p>$$\tag{4}
-y_{k+1} = \sum_{j=0}^{m-1} \frac{t_{k+1}^{j}}{j!} y_0^{(j)} + \frac{1}{\Gamma(n)} \left(\sum_{j=0}^{k+1} a_{j, k+1} f(t_j, y_j)\right)
+y_{k+1} = \sum_{j=0}^{m-1} \frac{t_{k+1}^{j}}{j!} y_0^{(j)} + \frac{1}{\Gamma(n)} \left(\sum_{j=0}^{k} a_{j, k+1} f(t_j, y_j) + a_{k+1, k+1} f(t_{k+1}, y_{k+1})\right)
 $$</p>
-<p>The problem know is this equation is require the value of $y_{k+1}$ which is unknown, and due to the nonlinear nature of the function $f$, we cannot solve for $y_{k+1}$ directly in general. Therefore, we may use (1) in an iterative process, inserting a preliminary approximation for $y_{k+1}$ in the right-hand side in order to determine a better approximation that we can used.</p>
+<p>The problem know is this equation is require the value of $y_{k+1}$ which is unknown, and due to the nonlinear nature of the function $f$, we cannot solve for $y_{k+1}$ directly in general.</p>
+<h4 id="explicit-method">Explicit Method</h4>
+<p>Therefore, we may use (1) in an iterative process, inserting a preliminary approximation for $y_{k+1}$ in the right-hand side in order to determine a better approximation that we can used.</p>
 <p>The preliminary approximation $y_{k+1}^{P}$, the so-called predictor, is obtained in a very similar way, only replacing the xxxxxxx formula by the rectangle rule</p>
 <p>$$
 \begin{aligned}
-&amp; \int_{0}^{t_{k+1}} (t_{k+1} - z)^{n-1} g(z) \mathrm{d} z \<br>
-\approx &amp; \int_{0}^{t_{k+1}} (t_{k+1} - z)^{n-1} \sum_{j=0}^{k} g(t_j) \mathrm{1}(z) \mathrm{d} z \<br>
-=&amp; \sum_{j=0}^{k} g(t_j) \int_{0}^{t_{k+1}} (t_{k+1} - z)^{n-1} \mathrm{d} z \<br>
-=&amp; \sum_{j=0}^{k} g(t_j) \frac{(t_{k+1} - t_{j}^n - (t_{k+1} - t_{j+1})^n}{n} \<br>
-=&amp; \sum_{j=0}^{k} b_{j, k+1} g(t_j) \<br>
+&amp; \int_{0}^{t_{k+1}} (t_{k+1} - z)^{n-1} g(z) \mathrm{d} z \\<br>
+\approx &amp; \int_{0}^{t_{k+1}} (t_{k+1} - z)^{n-1} \sum_{j=0}^{k} g(t_j) \mathrm{1}(z) \mathrm{d} z \\<br>
+=&amp; \sum_{j=0}^{k} g(t_j) \int_{0}^{t_{k+1}} (t_{k+1} - z)^{n-1} \mathrm{d} z \\<br>
+=&amp; \sum_{j=0}^{k} g(t_j) \frac{(t_{k+1} - t_{j}^n - (t_{k+1} - t_{j+1})^n}{n} \\<br>
+=&amp; \sum_{j=0}^{k} b_{j, k+1} g(t_j) \\<br>
 \end{aligned}
 $$</p>
 <p>the rectanle rule shown as</p>
-<p><img src="img/single_term/rectangle_rule.png" alt="rectangle rule"></p>
+<p><img src="rectangle_rule.png" alt="rectangle rule"></p>
 <p>in equispaced case, we have the simpler expression $b_{j,k+1}=\frac{h^n}{n}((k+1-j)^n-(k-j)^n)$.</p>
 <p>Thus giving us the explicit predict method</p>
 <p>$$\tag{5}
@@ -106,11 +108,14 @@ y_{k+1}^{P} = \sum_{j=0}^{m-1} \frac{t_{k+1}^{j}}{j!} y_0^{(j)} + \frac{1}{\Gamm
 $$</p>
 <p>This then gives us our corrector formula (i.e. the fractional variant of the one-step <em>Adams-Moulton method</em>), which is</p>
 <p>$$\tag{6}
-\begin{aligned}
-y_{k+1} =&amp; \sum_{j=0}^{m-1} \frac{t_{k+1}^{j}}{j!} y_0^{(j)} + \frac{1}{\Gamma(n)} \left(\sum_{j=0}^{k} a_{j, k+1} f(t_j, y(t_j)) + a_{k+1, k+1} f(t_{k+1}, y(t_{k+1}))\right) \<br>
-=&amp; \sum_{j=0}^{m-1} \frac{t_{k+1}^{j}}{j!} y_0^{(j)} + \frac{1}{\Gamma(n)} \left(\sum_{j=0}^{k} a_{j, k+1} f(t_j, y_j) + a_{k+1, k+1} f(t_{k+1}, y_{k+1}^{P})\right) \<br>
-\end{aligned}
+y_{k+1} = \sum_{j=0}^{m-1} \frac{t_{k+1}^{j}}{j!} y_0^{(j)} + \frac{1}{\Gamma(n)} \left(\sum_{j=0}^{k} a_{j, k+1} f(t_j, y_j) + a_{k+1, k+1} f(t_{k+1}, y_{k+1}^{P})\right)
 $$</p>
+<h4 id="implicit-method">Implicit Method</h4>
+<p>Find a root of a scalar function</p>
+<p>$$\tag{7}
+\bar{y}<em>{k+1} - \frac{a</em>{k+1, k+1}}{\Gamma(n)} f(t_{k+1}, \bar{y}_{k+1}) = \sum_{j=0}^{m-1} \frac{t_{k+1}^{j}}{j!} y_0^{(j)} + \frac{1}{\Gamma(n)} \left(\sum_{j=0}^{k} a_{j, k+1} f(t_j, y_j)\right)
+$$</p>
+<p>then $\bar{y}<em>{k+1}$ is the approximation of $y</em>{k+1}$.</p>
 <h2 id="examples">Examples</h2>
 <h3 id="ex1-two-functions-coincide-at-x_1-but-nowhere-else">ex.1 two functions coincide at $x_1$ but nowhere else</h3>
 <p><strong>Theorem 6.A.</strong> Let $f: [a, b]\times [c, d]\rightarrow\mathbb{R}$ be continuous and satisfy a Lipschitz condition with respect to the second variable. Consider two solutions $y_1$ and $y_2$ of the differential equation</p>
@@ -226,6 +231,7 @@ D_{*0}^n y(x) = \frac{40320}{\Gamma(9-n)} x^{8-n} - 3\frac{\Gamma(5+n/2)}{\Gamma
 $$</p>
 <h4 id="numerical-3">Numerical</h4>
 <p>Let $n = 1.25$</p>
+<p><strong>Explicit</strong> method shown as</p>
 <pre><code class="language-python">def fun_4(t, y):
     expr1 = 40320/gamma(9-n) * t**(8-n)
     expr2 = 3 * gamma(5+n/2) / gamma(5-n/2) * t**(4-n/2)
@@ -245,7 +251,20 @@ $$</p>
 )
 y_data_4 = test_4.iterator()
 </code></pre>
-<p><img src="ex.4.num.png" alt="Figure 4.1 Numerial Solution"></p>
+<p><img src="ex.4.num.png" alt="Figure 4.1 Explicit Numerial Solution"></p>
+<p><strong>Implicit</strong> method shown as</p>
+<pre><code class="language-python">test_4_im = AdamsImplicit(
+    func=fun_4,
+    dy0=[np.array([0]), np.array([0])],
+    dn=n,
+    time_opt={
+        &quot;domain&quot;: np.array([0., 1.]),
+        &quot;n&quot;: 200
+    }
+)
+y_data_4_im = test_4_im.iterator()
+</code></pre>
+<p><img src="ex.4.num.im.png" alt="Figure 4.1 Implicit Numerial Solution"></p>
 <h4 id="analytical-1">Analytical</h4>
 <pre><code class="language-python">t_seq_4 = test_4.t.seq
 # t_seq_4 = np.linspace(0, 1., 201)
@@ -258,6 +277,7 @@ y_analytic_4 = t_seq_4**8 - 3 * t_seq_4**(4+n/2) + 9/4 * t_seq_4**n
 </code></pre>
 <p><img src="ex.4.err.png" alt="Figure 4.3 Error"></p>
 <h4 id="error-order">Error Order</h4>
+<p><strong>Explicit</strong> shown as</p>
 <pre><code class="language-python">iter_step = 7
 step_n = 10
 
@@ -323,6 +343,75 @@ print(order_info_table.get_string())
 <td style="text-align:center">640</td>
 <td style="text-align:center">1.961993e-06</td>
 <td style="text-align:center">1.9656</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Implicit</strong> shown as</p>
+<pre><code class="language-python">iter_step = 7
+step_n = 10
+
+y_4_end_list = iter_error_order(
+    module=AdamsImplicit,
+    parameters={
+        &quot;func&quot;: fun_4,
+        &quot;dy0&quot;: [np.array([0]), np.array([0])],
+        &quot;dn&quot;: n,
+        &quot;time_opt&quot;: {
+            &quot;domain&quot;: np.array([0., 1.]),
+            &quot;n&quot;: step_n
+        }
+    },
+    iter_name=&quot;time_opt&quot;,
+    iter_step=iter_step,
+    iter_func=lambda opt: dict(opt, n=opt[&quot;n&quot;] * 2),
+    collect_func=lambda opt, out: [opt[&quot;n&quot;], out[-1] - y_analytic_4[-1]]
+)
+
+order_info_table, order_info = error_table(y_4_end_list)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">step size</th>
+<th style="text-align:center">Error of Adams scheme</th>
+<th style="text-align:center">Error Order</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">10</td>
+<td style="text-align:center">9.452069e-03</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">20</td>
+<td style="text-align:center">2.300722e-03</td>
+<td style="text-align:center">2.0385</td>
+</tr>
+<tr>
+<td style="text-align:center">40</td>
+<td style="text-align:center">5.679638e-04</td>
+<td style="text-align:center">2.0182</td>
+</tr>
+<tr>
+<td style="text-align:center">80</td>
+<td style="text-align:center">1.412250e-04</td>
+<td style="text-align:center">2.0078</td>
+</tr>
+<tr>
+<td style="text-align:center">160</td>
+<td style="text-align:center">3.522694e-05</td>
+<td style="text-align:center">2.0032</td>
+</tr>
+<tr>
+<td style="text-align:center">320</td>
+<td style="text-align:center">8.798560e-06</td>
+<td style="text-align:center">2.0013</td>
+</tr>
+<tr>
+<td style="text-align:center">640</td>
+<td style="text-align:center">2.198795e-06</td>
+<td style="text-align:center">2.0006</td>
 </tr>
 </tbody>
 </table>
