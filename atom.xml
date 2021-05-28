@@ -224,7 +224,7 @@ y_data_3 = test_3.iterator()
 <p><strong>Example C.1</strong></p>
 <p>$$
 \begin{aligned}
-D_{*0}^n y(x) =&amp; \frac{40320}{\Gamma(9-n)} x^{8-n} - 3\frac{\Gamma(5+n/2)}{\Gamma(5+n/2)} x^{4-n/2} + \<br>
+D_{*0}^n y(x) =&amp; \frac{40320}{\Gamma(9-n)} x^{8-n} - 3\frac{\Gamma(5+n/2)}{\Gamma(5+n/2)} x^{4-n/2} + \\<br>
 &amp; \frac{9}{4}\Gamma(n+1) + \left(\frac{3}{2} x^{n/2} - x^4\right) - [y(x)]^{3/2}
 \end{aligned},\quad x\in [0, 1], n &gt; 1
 $$</p>
